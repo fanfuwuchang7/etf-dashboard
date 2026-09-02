@@ -1091,10 +1091,10 @@ def main():
             rows = all_rows.get(code)
             if rows:
                 f = compute(rows)
-                    if f is not None:          # 增加非空判断
-                        f["code"] = code
-                        f["name"] = name
-                        records.append(f)
+                if f is not None:          # 增加非空判断
+                    f["code"] = code
+                    f["name"] = name
+                    records.append(f)
     if not records:
         live = False
         for code, name in ETFS:

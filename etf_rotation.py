@@ -1088,12 +1088,13 @@ def main():
     records = []
     if live:
         for code, name in ETFS:
-            rows = all_rows.get(code)
-            if rows:
-                f = compute(rows)
-                f["code"] = code
-                f["name"] = name
-                records.append(f)
+    rows = all_rows.get(code)
+    if rows:
+        f = compute(rows)
+        if f is not None:          # 增加非空判断
+            f["code"] = code
+            f["name"] = name
+            records.append(f)
     if not records:
         live = False
         for code, name in ETFS:

@@ -50,7 +50,6 @@ HEADERS = {
 
 # ETF池 —— 与 etf_rotation.py 保持一致
 ETFS = [
-    ("sh164906", "交银海外中国互联网"),
     ("sh501057", "CXOETF"),
     ("sh510050", "上证50ETF"),
     ("sh510160", "产业升级ETF南方"),

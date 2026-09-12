@@ -20,6 +20,7 @@ GitHub Actions 每日19:00(北京时间)自动运行
 """
 import json
 import os
+import time
 import datetime
 import urllib.request
 import urllib.error
@@ -204,7 +205,6 @@ ETFS = [
     ("sh589070", "科创芯片设计ETF天弘"),
     ("sh589720", "科创创新药ETF国泰"),
     ("sz159036", "软件开发ETF华宝"),
-    ("sz159075", "工业互联网ETF华夏"),
     ("sz159107", "创业板软件ETF富国"),
     ("sz159108", "工业软件ETF博时"),
     ("sz159141", "科创创业人工智能ETF永赢"),
@@ -349,6 +349,180 @@ def fetch_kline(symbol, datalen=160):
     return rows
 
 
+# ===================== 备用数据源: 腾讯财经 / 东方财富 =====================
+def _code_to_em(code):
+    """sz/sh 前缀 → 东方财富 secid (1=上交所, 0=深交所)"""
+    return ("1." if code.startswith("sh") else "0.") + code[2:]
+
+
+def fetch_from_tencent(code, datalen=160):
+    """腾讯日K线, 返回统一结构 [{day,open,high,low,close,volume}] 或 None"""
+    url = "https://web.ifzq.gtimg.cn/appstuff/app/kline/mkline?param=%s,d,%d" % (code, datalen)
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        raw = resp.read().decode("utf-8")
+    obj = json.loads(raw)
+    d = obj.get("data", {}).get(code)
+    if not d:
+        return None
+    arr = d.get("qfqday") or d.get("day") or []
+    if not arr:
+        return None
+    rows = [{"day": x["day"], "open": float(x["open"]), "high": float(x["high"]),
+             "low": float(x["low"]), "close": float(x["close"]), "volume": float(x["volume"])}
+            for x in arr]
+    rows.sort(key=lambda r: r["day"])
+    return rows
+
+
+def fetch_from_eastmoney(code, datalen=160):
+    """东方财富日K线, 返回统一结构 [{day,open,high,low,close,volume}] 或 None"""
+    secid = _code_to_em(code)
+    url = ("https://push2his.eastmoney.com/api/qt/stock/kline/get"
+           "?secid=%s&fields1=f1,f2,f3&fields2=f51,f52,f53,f54,f55,f56"
+           "&klt=101&fqt=1&end=20500101&lmt=%d" % (secid, datalen))
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        raw = resp.read().decode("utf-8")
+    obj = json.loads(raw)
+    kls = (obj.get("data") or {}).get("klines") or []
+    if not kls:
+        return None
+    rows = []
+    for line in kls:
+        p = line.split(",")
+        rows.append({"day": p[0], "open": float(p[1]), "close": float(p[2]),
+                     "high": float(p[3]), "low": float(p[4]), "volume": float(p[5])})
+    rows.sort(key=lambda r: r["day"])
+    return rows
+
+
+# ===================== 备用数据源: 必盈API (商用付费, 需licence) =====================
+# ---- API 密钥 (直接内置, 不依赖外部文件) ----
+# 必盈基金K线证书 (10个, 自动轮询). 可用环境变量 BIYING_LICENCE 覆盖.
+BIYING_LICENCES = [
+    # 之前证书
+    "92994776-0A14-42EF-9828-ABF3BA516560",
+    "8CA11C04-6D14-43A5-A145-C8FBAE4C6BA3",
+    "D4488266-7DC9-4950-A310-C2EC76F3F07F",
+    "EA896E10-4B41-4B1D-823C-5C64C027C041",
+    "12CD4F9E-DDED-454F-AD5D-39F5DD75F7FC",
+    # 刚发证书
+    "E1C19B33-B368-4D8E-B990-A6114003D7F1",
+    "04BE5730-D5A7-46B7-884B-FF283CDC65E2",
+    "EE9201EB-DB5A-4960-B4E3-2A4544C7CF9A",
+    "3EFC9A56-78BD-4CE9-9DFF-5356FE1EA6BF",
+    "979600A6-D135-4BD1-8470-106E81D8AD18",
+]
+# 以下密钥已内置备用, 暂未接入数据源 (按需启用)
+ALPHA_KEY     = "4KCMPB9GT8TZY4BT"                     # Alpha Vantage (美股/外汇/加密)
+FRED_KEY      = "7f51496dd86d6ce851b84767552a5903"     # FRED 宏观经济数据
+
+# 环境变量可覆盖必盈证书
+_env = os.environ.get("BIYING_LICENCE") or os.environ.get("BIYING_LICENCES", "")
+if _env.strip():
+    BIYING_LICENCES = [x.strip() for x in _env.split(",") if x.strip()]
+
+BIYING_LICENCE  = BIYING_LICENCES[0] if BIYING_LICENCES else ""
+BIYING_PERIOD   = "d"   # 分时级别: d日K / w周K / m月K
+BIYING_BASE     = "https://api.biyingapi.com"
+# 接口路径(官方文档): 历史K线 /jj/lskx/{基金代码}/{分时级别}/{licence}
+#                    最新K线 /jj/zkzk/{基金代码}/{分时级别}/{licence}
+BIYING_URL_HIS  = BIYING_BASE + "/jj/lskx/%s/%s/%s"
+
+
+def _fund_code(code):
+    """sh510300 / sz159915 → 510300 (必盈基金代码为6位纯数字)"""
+    return code[2:] if code[:2] in ("sh", "sz") else code
+
+
+def _ths_code(code):
+    """sh510300 / sz159915 -> sh_510300 / sz_159915 (同花顺行情代码)"""
+    c = code[2:] if code[:2] in ("sh", "sz") else code
+    return ("sh_" + c) if c[:1] in ("5", "6") else ("sz_" + c)
+
+
+def fetch_from_tonghuashun(code, datalen=160, period=None):
+    """同花顺免费行情线路接口(日K), 返回统一结构 [{day,open,high,low,close,volume}] 或 None。
+    d.10jqka.com.cn 的 line 接口免 key, 单次最多约140根, 仅作补充源; 失败返回 None 走下一源。"""
+    try:
+        import re, json
+    except Exception:
+        return None
+    try:
+        url = "https://d.10jqka.com.cn/v4/line/%s/01/last.js" % _ths_code(code)
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0",
+            "Referer": "https://www.10jqka.com.cn/",
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            raw = resp.read().decode("utf-8", "ignore")
+        m = re.search(r"\((.*)\)\s*$", raw, re.S)
+        if not m:
+            return None
+        obj = json.loads(m.group(1))
+        data = obj.get("data") or ""
+        if not data:
+            return None
+        rows = []
+        for bar in data.split(";"):
+            f = bar.split(",")
+            if len(f) < 6:
+                continue
+            try:
+                d = f[0]
+                day = "%s-%s-%s" % (d[:4], d[4:6], d[6:8]) if (len(d) == 8 and d.isdigit()) else d
+                rows.append({"day": day, "open": float(f[1]), "high": float(f[2]),
+                             "low": float(f[3]), "close": float(f[4]),
+                             "volume": float(f[5])})
+            except (ValueError, TypeError):
+                continue
+        if rows:
+            rows.sort(key=lambda r: r["day"])
+            return rows[-datalen:]
+        return None
+    except Exception:
+        return None
+
+
+def fetch_from_biying(code, datalen=160, period=None):
+    """必盈API基金历史K线, 返回统一结构 [{day,open,high,low,close,volume}] 或 None
+
+    字段: d交易时间(yyyy-MM-dd) o开盘 h最高 l最低 c收盘 v成交量 zde涨跌额 zd涨跌幅 zf振幅
+    """
+    if not BIYING_LICENCES:
+        return None
+    period = period or BIYING_PERIOD
+    for lk in BIYING_LICENCES:
+        try:
+            url = BIYING_URL_HIS % (_fund_code(code), period, lk)
+            req = urllib.request.Request(url, headers=HEADERS)
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                raw = resp.read().decode("utf-8")
+            obj = json.loads(raw)
+            # 兼容 数组 / {data:[...]} / {result:[...]} 三种返回形态
+            if isinstance(obj, dict):
+                arr = obj.get("data") or obj.get("result") or obj.get("list") or []
+                if isinstance(arr, dict):
+                    arr = arr.get("data") or arr.get("list") or []
+            else:
+                arr = obj or []
+            rows = []
+            for x in arr:
+                try:
+                    rows.append({"day": str(x["d"]), "open": float(x["o"]), "high": float(x["h"]),
+                                 "low": float(x["l"]), "close": float(x["c"]),
+                                 "volume": float(x.get("v") or 0)})
+                except (KeyError, TypeError, ValueError):
+                    continue
+            if rows:
+                rows.sort(key=lambda r: r["day"])
+                return rows[-datalen:]
+        except Exception:
+            continue
+    return None
+
+
 def compute_from(closes, vols):
     """根据截至某天的收盘价/成交量序列计算三因子与风控。序列长度需 >= V_PERIOD+1。"""
     n = len(closes)
@@ -407,7 +581,7 @@ def compute(rows):
 def fetch_market_trend():
     """抓取大盘基准指数(上证综指), 判断趋势并给出建议总仓位。失败回退中性。"""
     try:
-        rows = fetch_kline(MARKET_INDEX, datalen=70)
+        rows = fetch_kline_safe(MARKET_INDEX, datalen=70)
         closes = [r["close"] for r in rows]
         n = len(closes)
         cur = closes[-1]
@@ -434,15 +608,40 @@ def fetch_market_trend():
                 "score": None, "ok": False}
 
 
+def fetch_kline_safe(symbol, datalen=160, tries=2):
+    """多源K线抓取(新浪→腾讯→东财→必盈), 任一成功即返回; 单源限流时自动切换。
+    默认优先新浪, 新浪失败/限流自动替换为腾讯/东方财富/必盈(需配置licence)。"""
+    sources = [
+        ("新浪", lambda: fetch_kline(symbol, datalen=datalen)),
+        ("腾讯", lambda: fetch_from_tencent(symbol, datalen)),
+        ("东财", lambda: fetch_from_eastmoney(symbol, datalen)),
+        ("同花顺", lambda: fetch_from_tonghuashun(symbol, datalen)),
+        ("必盈", lambda: fetch_from_biying(symbol, datalen)),
+    ]
+    for name, fn in sources:
+        for t in range(tries):
+            try:
+                r = fn()
+                if r and len(r) >= V_PERIOD + 1:
+                    if name != "新浪":
+                        print("  [数据源] %s 改用%s源" % (symbol, name))
+                    return r
+            except Exception:
+                pass
+            if t < tries - 1:
+                time.sleep(2)  # 源内重试退避, 防限流
+    print("  [跳过] %s 全部数据源失败" % symbol)
+    return None
+
+
 def fetch_all_rows():
-    """抓取所有ETF的长K线(用于回测/信号天数)。返回 {code: rows|None}"""
+    """串行直取所有ETF的长K线(用于回测/信号天数)。返回 {code: rows|None}
+    每只依次尝试 新浪→腾讯→东财(fetch_kline_safe 自动替换), 串行不触发限流洪峰。"""
     data = {}
-    for code, name in ETFS:
-        try:
-            data[code] = fetch_kline(code, datalen=160)
-        except Exception as e:
-            print("  [跳过] %s 抓取失败: %s" % (code, e))
-            data[code] = None
+    for i, (code, name) in enumerate(ETFS):
+        data[code] = fetch_kline_safe(code, datalen=160)
+        if (i + 1) % 20 == 0:
+            print("  [进度] 已抓 %d/%d" % (i + 1, len(ETFS)))
     return data
 
 

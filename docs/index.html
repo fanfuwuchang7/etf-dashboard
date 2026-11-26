@@ -1,82 +1,1492 @@
-<!doctype html><html lang='zh-CN'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><link rel='icon' href='data:,'><title>ETF 结果看板</title><style>
-*{box-sizing:border-box}
-body{font-family:'WenQuanYi Micro Hei',-apple-system,'Microsoft YaHei',sans-serif;max-width:1180px;margin:0 auto;padding:16px 20px 28px;color:#222;background:#f6f8fb}
-h1{font-size:19px;margin:0 0 6px;color:#1a4d8f}
-.statusbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px;font-size:12px;color:#6b7684}
-.statusbar b{font-size:15px;color:#1d3f66}
-.badge{display:inline-block;padding:2px 9px;border-radius:999px;background:#e8f1ff;color:#25599b;font-size:12px;font-weight:600}
-.badge.warn{background:#fff3e0;color:#9a5b00}
-.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 0 12px}
-.kpi{display:flex;align-items:center;gap:10px;min-width:0;background:#fff;border:1px solid #e3e9f2;border-radius:10px;padding:10px 12px;min-height:76px;box-shadow:0 1px 3px rgba(30,60,100,.06)}
-.kpi b{display:block;font-size:19px;color:#25476b;line-height:1.2;font-variant-numeric:tabular-nums;white-space:nowrap}
-.kpi span{display:block;font-size:11.5px;color:#6b7684;margin-top:2px}
-.kpi em{display:block;font-style:normal;font-size:11px;color:#8895a5;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.kpi .kbox{flex:1;min-width:0}
-.kpi .ring{position:relative;flex:0 0 44px;width:44px;height:44px;border-radius:50%}
-.kpi .ring::after{content:'';position:absolute;inset:7px;background:#fff;border-radius:50%}
-.kpi .kbar{height:6px;background:#eef2f7;border-radius:4px;overflow:hidden;margin-top:7px}
-.kpi .kbar i{display:block;height:100%;border-radius:4px}
-.dash{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{min-width:0;background:#fff;border:1px solid #e3e9f2;border-radius:10px;padding:10px 12px;box-shadow:0 1px 3px rgba(30,60,100,.06);cursor:zoom-in}
-.card h4{margin:0 0 6px;font-size:12.5px;font-weight:600;color:#33465c}
-.chart svg{display:block;width:100%;height:auto;max-width:none;margin:0;border:0}
-.hb{display:grid;grid-template-columns:88px 1fr 46px;gap:8px;align-items:center;font-size:11px;color:#4a5a70;margin:4px 0}
-.hb-track{position:relative;height:11px;background:#f4f7fb;border-radius:3px}
-.hb-track::before{content:'';position:absolute;left:50%;top:-1px;bottom:-1px;width:1px;background:#c9d4e2}
-.hb-track i{position:absolute;top:2px;height:7px;border-radius:2px}
-.hb-track i.pos{background:#e05a4f}
-.hb-track i.neg{background:#2e9e7b}
-.hb b{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:#33465c}
-.stack{display:flex;height:16px;border-radius:5px;overflow:hidden;background:#eef2f7;margin:10px 0 4px}
-.stack i{display:block;height:100%}
-.slegend{display:flex;justify-content:space-between;font-size:11px;color:#6b7684;margin-bottom:6px}
-.slegend b{color:#33465c}
-.srcdata[hidden]{display:none}
-#lightbox{position:fixed;inset:0;background:rgba(12,22,38,.85);display:none;align-items:center;justify-content:center;z-index:99;padding:24px;cursor:zoom-out}
-#lightbox.on{display:flex}
-#lightbox .lb-in{background:#fff;border-radius:10px;padding:18px;width:min(1080px,96vw);max-height:88vh;overflow:auto;cursor:default}
-#lightbox h4{margin:0 0 12px;font-size:15px;color:#1a4d8f}
-#lightbox .hb{grid-template-columns:140px 1fr 70px;font-size:13px}
-.dash .card:last-child:nth-of-type(odd){grid-column:1/-1}
-.dash .card:last-child:nth-of-type(odd) .chart svg{max-width:560px!important;margin:0 auto}
-@media(max-width:980px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:720px){.dash{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style></head><body><!--viz-start--><h1>ETF 全景 · 结果看板</h1><!--verdict-start--><div style='display:flex;align-items:center;gap:10px;background:#f2f7ff;border-left:3px solid #3b7dd8;border-radius:6px;padding:9px 12px;margin:0 0 10px'><span style='flex:0 0 auto;background:#3b7dd8;color:#fff;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600'>结论</span><b style='font-size:13.5px;font-weight:600;color:#25476b;line-height:1.5'>短中期背离，需下一交易日量能与资金确认；二次探底风险偏高。</b></div><!--verdict-end--><!--score-start--><div style='display:flex;gap:16px;align-items:center;background:#fff;border:1px solid #e3e9f2;border-radius:10px;padding:10px 14px;margin:0 0 10px;box-shadow:0 1px 3px rgba(30,60,100,.06)'><div style='flex:0 0 132px;text-align:center'><div style='font-size:30px;font-weight:700;line-height:1.1;color:#6fae7a'>25.0%</div><div style='font-size:11px;color:#6b7684;margin-top:2px'>综合得分率</div><div style='font-size:10.5px;color:#8895a5'>总分 25.00 / 100.00</div></div><div style='flex:1;min-width:0'><div style='display:flex;gap:8px;align-items:center;margin-bottom:6px'><span style='background:#6fae7a;color:#fff;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600'>弱势</span><span style='background:#fff1f0;color:#b23b32;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600'>一票否决</span><span style='font-size:11px;color:#8895a5'>五维加权 · 自有口径 · 规则演算，非建议</span></div><div style='position:relative;height:12px;background:#eef2f7;border-radius:6px;overflow:hidden'><i style='display:block;height:100%;width:25.0%;background:#6fae7a'></i><i style='position:absolute;left:20%;top:0;bottom:0;width:1px;background:#fff;opacity:.9'></i><i style='position:absolute;left:40%;top:0;bottom:0;width:1px;background:#fff;opacity:.9'></i><i style='position:absolute;left:60%;top:0;bottom:0;width:1px;background:#fff;opacity:.9'></i><i style='position:absolute;left:80%;top:0;bottom:0;width:1px;background:#fff;opacity:.9'></i></div><div style='display:flex;justify-content:space-between;font-size:10px;color:#8895a5;margin-top:3px'><span>0</span><span>20</span><span>40</span><span>60</span><span>80</span><span>100</span></div><div style='margin-top:6px;background:#fff1f0;border:1px solid #ffd6d3;border-radius:5px;padding:4px 8px;font-size:11px;color:#b23b32'>一票否决：涨停 30 家 &lt; 40 且 涨跌比 0.06 &lt; 0.3，得分封顶 25%</div></div></div><!--score-end--><div class='statusbar'><b>2026-11-20</b><span>00:23</span><span class='badge'>收盘 · 终值</span><span>公开行情接口</span></div><div class='kpis'><div class='kpi'><div class='ring' style='background:conic-gradient(#e05a4f 0 5.0%,#edf1f6 5.0% 100%)'></div><div><b>5%</b><span>上涨占比</span></div></div><div class='kpi'><div class='kbox'><b>14,222</b><span>两市成交额·亿</span><div class='kbar'><i style='width:71.1%;background:#3b7dd8'></i></div><em>收盘 · 终值</em></div></div><div class='kpi'><div class='kbox'><b>-509</b><span>板块净额·亿</span><div class='kbar'><i style='width:84.8%;background:#2e9e7b'></i></div><em>行业合计</em></div></div><div class='kpi'><div class='kbox'><b>30 / 68</b><span>涨停 / 跌停</span><div class='kbar'><i style='width:30.6%;background:#e05a4f'></i></div><em>全市场</em></div></div><div class='kpi'><div class='ring' style='background:conic-gradient(#3b7dd8 0 97.0%,#edf1f6 97.0% 100%)'></div><div><b>97%</b><span>数据质量</span></div></div><div class='kpi'><div class='ring' style='background:conic-gradient(#f0a04b 0 57.8%,#edf1f6 57.8% 100%)'></div><div><b>58%</b><span>自建画像</span></div></div></div><div class='dash'><!--radar-start--><section class='card'><h4>资金势力 · 五维结构</h4><div class='chart'><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 240' width='100%' style='max-width:380px;margin:0 auto;display:block;font-family:sans-serif'><polygon points='180.0,97.0 200.0,111.5 192.3,135.0 167.7,135.0 160.0,111.5' fill='none' stroke='#e6ebf2' stroke-width='1'/><polygon points='180.0,76.0 219.9,105.0 204.7,152.0 155.3,152.0 140.1,105.0' fill='none' stroke='#e6ebf2' stroke-width='1'/><polygon points='180.0,55.0 239.9,98.5 217.0,169.0 143.0,169.0 120.1,98.5' fill='none' stroke='#e6ebf2' stroke-width='1'/><polygon points='180.0,34.0 259.9,92.0 229.4,186.0 130.6,186.0 100.1,92.0' fill='none' stroke='#e6ebf2' stroke-width='1'/><line x1='180.0' y1='118.0' x2='180.0' y2='34.0' stroke='#e6ebf2'/><line x1='180.0' y1='118.0' x2='259.9' y2='92.0' stroke='#e6ebf2'/><line x1='180.0' y1='118.0' x2='229.4' y2='186.0' stroke='#e6ebf2'/><line x1='180.0' y1='118.0' x2='130.6' y2='186.0' stroke='#e6ebf2'/><line x1='180.0' y1='118.0' x2='100.1' y2='92.0' stroke='#e6ebf2'/><polygon points='180.0,106.6 220.4,104.9 200.9,146.7 178.0,120.7 152.8,109.2' fill='rgba(240,160,75,.28)' stroke='#f0a04b' stroke-width='2'/><circle cx='180.0' cy='106.6' r='2.6' fill='#f0a04b'/><circle cx='220.4' cy='104.9' r='3.6' fill='#e05a4f'/><circle cx='200.9' cy='146.7' r='2.6' fill='#f0a04b'/><circle cx='178.0' cy='120.7' r='2.6' fill='#f0a04b'/><circle cx='152.8' cy='109.2' r='2.6' fill='#f0a04b'/><text x='180.0' y='14.0' font-size='10.5' fill='#33465c' font-weight='400' text-anchor='middle'>机构</text><text x='180.0' y='26.0' font-size='10' fill='#f0a04b' font-weight='400' text-anchor='middle'>2.99/22</text><text x='278.9' y='85.9' font-size='10.5' fill='#e05a4f' font-weight='600' text-anchor='start'>龙头主导</text><text x='278.9' y='97.9' font-size='10' fill='#e05a4f' font-weight='600' text-anchor='start'>14.18/28</text><text x='241.2' y='202.1' font-size='10.5' fill='#33465c' font-weight='400' text-anchor='start'>外资</text><text x='241.2' y='214.1' font-size='10' fill='#f0a04b' font-weight='400' text-anchor='start'>4.64/11</text><text x='118.8' y='202.1' font-size='10.5' fill='#33465c' font-weight='400' text-anchor='end'>散户</text><text x='118.8' y='214.1' font-size='10' fill='#f0a04b' font-weight='400' text-anchor='end'>0.00/17</text><text x='81.1' y='85.9' font-size='10.5' fill='#33465c' font-weight='400' text-anchor='end'>游资</text><text x='81.1' y='97.9' font-size='10' fill='#f0a04b' font-weight='400' text-anchor='end'>7.49/22</text></svg></div><div style='font-size:11px;color:#6b7684;text-align:center;margin-top:4px'>格局 护盘市</div></section><!--radar-end--><section class='card'><h4>指数涨跌幅（%）</h4><div class='chart'><div class='hb' title='上证指数: -1.23'><span>上证指数</span><div class='hb-track'><i class='neg' style='right:50%;width:12.6%'></i></div><b>-1.23</b></div><div class='hb' title='深证成指: -3.09'><span>深证成指</span><div class='hb-track'><i class='neg' style='right:50%;width:31.6%'></i></div><b>-3.09</b></div><div class='hb' title='上证50: +0.45'><span>上证50</span><div class='hb-track'><i class='pos' style='left:50%;width:4.6%'></i></div><b>+0.45</b></div><div class='hb' title='沪深300: -0.76'><span>沪深300</span><div class='hb-track'><i class='neg' style='right:50%;width:7.8%'></i></div><b>-0.76</b></div><div class='hb' title='中证500: -3.93'><span>中证500</span><div class='hb-track'><i class='neg' style='right:50%;width:40.2%'></i></div><b>-3.93</b></div><div class='hb' title='中证1000: -4.89'><span>中证1000</span><div class='hb-track'><i class='neg' style='right:50%;width:50.0%'></i></div><b>-4.89</b></div><div class='hb' title='创业板指: -3.54'><span>创业板指</span><div class='hb-track'><i class='neg' style='right:50%;width:36.2%'></i></div><b>-3.54</b></div><div class='hb' title='科创50: -3.12'><span>科创50</span><div class='hb-track'><i class='neg' style='right:50%;width:31.9%'></i></div><b>-3.12</b></div><div class='hb' title='北证50: -4.85'><span>北证50</span><div class='hb-track'><i class='neg' style='right:50%;width:49.6%'></i></div><b>-4.85</b></div></div></section><!--ovh-start--><section class='card' style='grid-column:1/-1'><h4>盘面总述</h4><div style='display:flex;gap:14px'><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#e05a4f;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>信息面</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>短期过热判定</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>常态区</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>主线判断</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>元件 · 锁定 51%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>护盘 / 过热</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>护盘区（权重差 +2.31pct）</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>杀权重</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>跌停 68 只 · 创业板 -3.54%</span></div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#b26a00;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>资金面</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>赚钱效应</span><span style='color:#e05a4f;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>差 2/15 分</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>主动性买盘</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>-3.66%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>龙队动向</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>托而不举 · 市场未认</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>港股流动性</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>恒生 -1.89%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>吸血效应</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>均衡</span></div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#6b4bb5;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>情绪面</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>最高标</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>待补</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>追涨情绪</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>0/100 · 避险</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>恐贪（自算）</span><span style='color:#e05a4f;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>12/100 · 极度恐慌</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>散户情绪</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>悲观</span></div></div></div></section><section class='card' style='grid-column:1/-1'><h4>盘面关键数据</h4><div style='display:flex;gap:14px'><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#e05a4f;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>盘面结构</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>指数共振</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>上证 -1.23 · 300 -0.76 · 创 -3.54</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>剪刀差</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>权重差 +2.31pct</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>涨停板</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>待补</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>涨跌家数</span><span style='color:#e05a4f;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>涨 313 / 跌 5236</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>涨停 / 跌停</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>30 / 68</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>海内外科技联动</span><span style='color:#e05a4f;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>强空共振</span></div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#b26a00;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>资金流向</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>两市成交额</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>14,222 亿（收盘终值）· 较上日 +8.97%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>主力净流入</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>-521 亿</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>融资余额</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>待补</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>TOP20成交占比</span><span style='color:#a5b1bf;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>11.5%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>主力净流入TOP10</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>+43 亿</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>龙队动向</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>托而不举 · 市场未认</span></div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#25599b;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>基差</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>IF</span><span style='color:#2e9e7b;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>-2.16%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>IH</span><span style='color:#2e9e7b;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>-2.31%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>IC</span><span style='color:#2e9e7b;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>-1.73%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>IM</span><span style='color:#2e9e7b;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>-1.82%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>口径</span><span style='color:#a5b1bf;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>负=贴水（期<现）</span></div></div></div></section><!--ovh-end--><div style='grid-column:1/-1'><!--panels-start--><div class='panels' style='display:flex;flex-wrap:wrap;gap:12px;margin:0'><section style='background:#fff;border:1px solid #e3e9f2;border-radius:10px;padding:9px 12px;box-shadow:0 1px 3px rgba(30,60,100,.06);flex:1 1 280px;min-width:0'><div style='display:flex;justify-content:space-between;align-items:center;gap:8px'><b style='font-size:12.5px;color:#1a4d8f'>主线判断</b><span style='font-size:10px;color:#8895a5'>任务日盘后 20:00 前更新</span></div><div style='display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 4px'><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#8f3b33;color:#ffffff;font-size:10.5px;font-weight:600;white-space:nowrap'>主线待确认·无扩散</span><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#eaf6ee;color:#2e7d55;font-size:10.5px;font-weight:600;white-space:nowrap'>锁定度 51%</span><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#fff3e0;color:#9a5b00;font-size:10.5px;font-weight:600;white-space:nowrap'>扩散 无</span><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#f2ecff;color:#6b4bb5;font-size:10.5px;font-weight:600;white-space:nowrap'>轮动 50%</span></div><div style='display:flex;justify-content:space-between;align-items:center;margin-top:2px'><span style='font-size:10px;color:#8895a5'>日期 2026-11-20</span><span style='display:flex;gap:6px;align-items:center'><b style='font-size:14px;color:#1a4d8f'>元件</b><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#eaf6ee;color:#2e7d55;font-size:10.5px;font-weight:600;white-space:nowrap'>锁定度 51%</span></span></div><div style='font-size:11px;color:#33465c;line-height:1.6;margin-top:3px'><div>主线候选 元件 S 100% · 白酒Ⅱ C 28% · 数字媒体 C 28% · 农产品加工 C 22%</div><div>支线候选 个护用品 C 17% · 国有大型银 C 17% · 保险Ⅱ C 17% · 渔业 C 11%</div><div>扩散候选 无 · 行业/兄弟行业板块</div></div></section><section style='background:#fff;border:1px solid #e3e9f2;border-radius:10px;padding:9px 12px;box-shadow:0 1px 3px rgba(30,60,100,.06);flex:1 1 280px;min-width:0'><div style='display:flex;justify-content:space-between;align-items:center;gap:8px'><b style='font-size:12.5px;color:#1a4d8f'>大团圆结局</b><span style='font-size:10px;color:#8895a5'>四条件 · 自算 · 判断时点 2026-11-20</span></div><div style='display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 4px'><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#e8f1ff;color:#25599b;font-size:10.5px;font-weight:600;white-space:nowrap'>满足 3/4</span><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#eaf6ee;color:#2e7d55;font-size:10.5px;font-weight:600;white-space:nowrap'>基准情景</span></div><div style='display:flex;gap:6px;align-items:baseline;font-size:11px;line-height:1.5'><b style='color:#2e9e7b;font-size:12px;flex:0 0 10px'>✓</b><span style='color:#33465c;flex:0 0 auto'>① 大逻辑中趋势</span><span style='color:#8895a5;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>权重 -1.23% vs 成长 -3.33%（差 2.10pct） · 大金融 保险Ⅱ +3亿</span></div><div style='display:flex;gap:6px;align-items:baseline;font-size:11px;line-height:1.5'><b style='color:#2e9e7b;font-size:12px;flex:0 0 10px'>✓</b><span style='color:#33465c;flex:0 0 auto'>② 科技不抢跑</span><span style='color:#8895a5;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>科创50 -3.12% · 创业板指 -3.54% · 科技类占净流出 Top 4/8</span></div><div style='display:flex;gap:6px;align-items:baseline;font-size:11px;line-height:1.5'><b style='color:#2e9e7b;font-size:12px;flex:0 0 10px'>✓</b><span style='color:#33465c;flex:0 0 auto'>③ 低位轮动</span><span style='color:#8895a5;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>保险Ⅱ（1 个） · 扩散 11%</span></div><div style='display:flex;gap:6px;align-items:baseline;font-size:11px;line-height:1.5'><b style='color:#e05a4f;font-size:12px;flex:0 0 10px'>✗</b><span style='color:#33465c;flex:0 0 auto'>④ 海外不恶化</span><span style='color:#8895a5;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>外围 1涨/7跌 · 最弱 恒生科技指数-3.78% · VIX 30.31</span></div></section></div><!--panels-end--></div><!--rot-start--><section class='card'><div style='display:flex;justify-content:space-between;align-items:center'><h4 style='margin:0'>资金轮动</h4><span style='font-size:10px;color:#8895a5'>板块级净流入 / 流出</span></div><div style='display:flex;gap:18px;margin-top:5px'><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#e05a4f;margin-bottom:2px'>📈 流入 Top</div><div class='fr' title='in:元件:-2.94:18.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>1</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>元件</span><span style='color:#e05a4f;flex:0 0 48px;text-align:right'>-2.94%</span><span style='color:#e05a4f;flex:0 0 62px;text-align:right;font-weight:600'>+18.00 亿</span></div><div class='fr' title='in:白酒Ⅱ:+0.41:5.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>2</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>白酒Ⅱ</span><span style='color:#e05a4f;flex:0 0 48px;text-align:right'>+0.41%</span><span style='color:#e05a4f;flex:0 0 62px;text-align:right;font-weight:600'>+5.00 亿</span></div><div class='fr' title='in:数字媒体:+0.05:5.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>3</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>数字媒体</span><span style='color:#e05a4f;flex:0 0 48px;text-align:right'>+0.05%</span><span style='color:#e05a4f;flex:0 0 62px;text-align:right;font-weight:600'>+5.00 亿</span></div><div class='fr' title='in:农产品加工:-1.54:4.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>4</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>农产品加工</span><span style='color:#e05a4f;flex:0 0 48px;text-align:right'>-1.54%</span><span style='color:#e05a4f;flex:0 0 62px;text-align:right;font-weight:600'>+4.00 亿</span></div><div class='fr' title='in:个护用品:-3.75:3.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>5</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>个护用品</span><span style='color:#e05a4f;flex:0 0 48px;text-align:right'>-3.75%</span><span style='color:#e05a4f;flex:0 0 62px;text-align:right;font-weight:600'>+3.00 亿</span></div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#2e9e7b;margin-bottom:2px'>📉 流出 Top</div><div class='fr' title='out:半导体:-4.91:-109.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>1</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>半导体</span><span style='color:#2e9e7b;flex:0 0 48px;text-align:right'>-4.91%</span><span style='color:#2e9e7b;flex:0 0 62px;text-align:right;font-weight:600'>-109.00 亿</span></div><div class='fr' title='out:通信设备:-4.71:-27.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>2</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>通信设备</span><span style='color:#2e9e7b;flex:0 0 48px;text-align:right'>-4.71%</span><span style='color:#2e9e7b;flex:0 0 62px;text-align:right;font-weight:600'>-27.00 亿</span></div><div class='fr' title='out:计算机设备:-4.62:-20.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>3</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>计算机设备</span><span style='color:#2e9e7b;flex:0 0 48px;text-align:right'>-4.62%</span><span style='color:#2e9e7b;flex:0 0 62px;text-align:right;font-weight:600'>-20.00 亿</span></div><div class='fr' title='out:小金属:-5.19:-15.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>4</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>小金属</span><span style='color:#2e9e7b;flex:0 0 48px;text-align:right'>-5.19%</span><span style='color:#2e9e7b;flex:0 0 62px;text-align:right;font-weight:600'>-15.00 亿</span></div><div class='fr' title='out:电池:-3.84:-15.00' style='display:flex;align-items:baseline;gap:7px;font-size:11px;line-height:1.95'><span style='color:#b6c0cd;flex:0 0 12px;text-align:right'>5</span><span style='color:#33465c;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>电池</span><span style='color:#2e9e7b;flex:0 0 48px;text-align:right'>-3.84%</span><span style='color:#2e9e7b;flex:0 0 62px;text-align:right;font-weight:600'>-15.00 亿</span></div></div></div></section><!--rot-end--><!--ovt-start--><section class='card'><div style='display:flex;justify-content:space-between;align-items:center'><h4 style='margin:0'>市场龙头 · 双榜</h4><span style='font-size:10px;color:#8895a5'>涨停池 0 家 · 自算</span></div><div style='display:flex;gap:8px;margin:6px 0'><div style='flex:1 1 0;background:#f7f9fc;border-radius:8px;padding:6px 8px;min-width:0'><div style='font-size:10px;color:#8895a5'>游资强度 GT</div><div style='font-size:15px;font-weight:700;color:#33465c'>12</div><div style='font-size:9.5px;color:#a5b1bf'>自算情绪代理</div></div><div style='flex:1 1 0;background:#f7f9fc;border-radius:8px;padding:6px 8px;min-width:0'><div style='font-size:10px;color:#8895a5'>机构温度 IT</div><div style='font-size:15px;font-weight:700;color:#33465c'>14</div><div style='font-size:9.5px;color:#a5b1bf'>机构维得分率</div></div><div style='flex:1 1 0;background:#f7f9fc;border-radius:8px;padding:6px 8px;min-width:0'><div style='font-size:10px;color:#8895a5'>弱化状态</div><div style='font-size:15px;font-weight:700;color:#33465c'>均衡</div><div style='font-size:9.5px;color:#a5b1bf'>同向消化</div></div><div style='flex:1 1 0;background:#f7f9fc;border-radius:8px;padding:6px 8px;min-width:0'><div style='font-size:10px;color:#8895a5'>活口群体</div><div style='font-size:15px;font-weight:700;color:#33465c'>—</div><div style='font-size:9.5px;color:#a5b1bf'></div></div><div style='flex:1 1 0;background:#f7f9fc;border-radius:8px;padding:6px 8px;min-width:0'><div style='font-size:10px;color:#8895a5'>缺主线</div><div style='font-size:15px;font-weight:700;color:#33465c'>—</div><div style='font-size:9.5px;color:#a5b1bf'>行业散·无聚焦</div></div></div><div style='display:flex;gap:14px'><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#e05a4f;margin-bottom:2px'>高标榜</div><div style='font-size:11px;color:#8895a5'>待补（涨停池未采集）</div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#b26a00;margin-bottom:2px'>市场龙头榜</div><div style='font-size:11px;color:#8895a5'>待补（涨停池未采集）</div></div></div><div style='font-size:9.5px;color:#a5b1bf;margin-top:4px'>自算口径：高标按连板数、龙头按封单排序 · 分数=连板+封单规则演算，非建议</div></section><section class='card'><h4>赚钱效应</h4><div style='display:flex;align-items:baseline;gap:8px'><b style='font-size:22px;color:#e05a4f'>2/15</b><span style='font-size:11px;color:#8895a5'>差 · 自算快照</span></div><div style='position:relative;height:9px;border-radius:5px;background:linear-gradient(90deg,#2e9e7b 0%,#f0a04b 55%,#e05a4f 100%);margin:7px 0 4px'><i style='position:absolute;left:13.3%;top:-4px;width:3px;height:17px;background:#1a4d8f;border-radius:2px'></i></div><div style='display:flex;justify-content:space-between;font-size:9.5px;color:#8895a5'><span>差 0</span><span>一般 5</span><span>好 10</span><span>15</span></div><div style='margin-top:4px'><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>上涨占比</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>5%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>涨跌比</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>0.06</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>涨停 / 跌停</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>30 / 68</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>两市成交额</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>14,222 亿（收盘）</span></div></div><div style='font-size:9.5px;color:#a5b1bf;margin-top:3px'>评分=多项广度读数规则演算，非投资建议</div></section><section class='card'><h4>避险情绪</h4><div style='display:flex;gap:14px'><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#e05a4f;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>情绪读数</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>避险总分</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>88/100</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>自算恐贪</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>12/100 · 极度恐慌</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>外围恐贪 CNN</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>12/100 · 极度恐惧</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>短期过热判定</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>弱势</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>VIX</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>30.31</span></div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#b26a00;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>信号 / 切分</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>老轨仲裁仓位</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>长线 52% / 短线 48%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>摔杯判定</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>未触发</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>情绪 / 资金切分</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>情绪极度恐慌 · 资金净流出</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>吸血面板</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>均衡</span></div></div></div><div style='font-size:9.5px;color:#a5b1bf;margin-top:3px'>避险/恐慌第三视角 · CNN 美股恐贪 / CBOE VIX · 周前 37 · 独立参考</div></section><section class='card'><h4>大盘评级 · 仓位配比</h4><div style='display:flex;gap:14px'><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#25599b;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>大盘评级</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>当日评级</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>谨慎 · 弱势</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>得分率</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>25.0%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>否决项</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>触发</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>主导维度</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>龙头主导</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>近 2 日情绪轨迹</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>85% → 16%</span></div><div style='font-size:9px;color:#a5b1bf'><svg width='104' height='18' viewBox='0 0 104 18' style='display:block;margin:3px 0 1px'><polyline points='0.0,2.0 104.0,16.0' fill='none' stroke='#3b7dd8' stroke-width='1.6' stroke-linejoin='round'/></svg>派生库逐日上涨占比</div></div><div style='flex:1 1 0;min-width:0'><div style='font-size:11.5px;font-weight:700;color:#b26a00;border-bottom:1px solid #f0e4e4;padding-bottom:3px;margin-bottom:3px'>仓位配比参考</div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>长线 · 底仓</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>52%</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>短线 · 机动</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>48%</span></div></div></div><div style='display:flex;height:12px;border-radius:5px;overflow:hidden;margin-top:8px'><i style='width:52%;background:#3b7dd8'></i><i style='width:48%;background:#f0a04b'></i></div><div style='font-size:9.5px;color:#a5b1bf;margin-top:3px'>自算 · 读数展示，非建议</div></section><section class='card'><h4>连板梯队</h4><div style='font-size:11px;color:#8895a5'>待补</div><div style='margin-top:5px'><div style='display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.9'><span style='flex:0 0 34px;color:#8895a5'>1板</span><div style='flex:1 1 0;background:#f4f7fb;border-radius:3px;height:9px'><i style='display:block;width:0.0%;height:100%;background:#e05a4f;border-radius:3px'></i></div><b style='flex:0 0 20px;text-align:right;color:#33465c'>0</b></div><div style='display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.9'><span style='flex:0 0 34px;color:#8895a5'>2板</span><div style='flex:1 1 0;background:#f4f7fb;border-radius:3px;height:9px'><i style='display:block;width:0.0%;height:100%;background:#e05a4f;border-radius:3px'></i></div><b style='flex:0 0 20px;text-align:right;color:#33465c'>0</b></div><div style='display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.9'><span style='flex:0 0 34px;color:#8895a5'>3板</span><div style='flex:1 1 0;background:#f4f7fb;border-radius:3px;height:9px'><i style='display:block;width:0.0%;height:100%;background:#e05a4f;border-radius:3px'></i></div><b style='flex:0 0 20px;text-align:right;color:#33465c'>0</b></div><div style='display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.9'><span style='flex:0 0 34px;color:#8895a5'>4板</span><div style='flex:1 1 0;background:#f4f7fb;border-radius:3px;height:9px'><i style='display:block;width:0.0%;height:100%;background:#e05a4f;border-radius:3px'></i></div><b style='flex:0 0 20px;text-align:right;color:#33465c'>0</b></div><div style='display:flex;align-items:center;gap:7px;font-size:11px;line-height:1.9'><span style='flex:0 0 34px;color:#8895a5'>5板+</span><div style='flex:1 1 0;background:#f4f7fb;border-radius:3px;height:9px'><i style='display:block;width:0.0%;height:100%;background:#e05a4f;border-radius:3px'></i></div><b style='flex:0 0 20px;text-align:right;color:#33465c'>0</b></div></div></section><section class='card'><h4>全市场成交额 TOP20</h4><div style='display:flex;align-items:baseline;gap:8px'><b style='font-size:20px;color:#25599b'>11.5%</b><span style='font-size:10px;color:#8895a5'>TOP20 合计 1,636 亿 / 两市 14,222 亿</span></div><div style='margin-top:4px'><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>1. 中际旭创</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>149 亿</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>2. 新易盛</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>147 亿</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>3. 宁德时代</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>105 亿</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>4. 紫金矿业</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>102 亿</span></div><div style='display:flex;justify-content:space-between;gap:8px;font-size:11px;line-height:1.9'><span style='color:#8895a5;flex:0 0 auto'>5. 贵州茅台</span><span style='color:#33465c;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'>98 亿</span></div></div><div style='font-size:9.5px;color:#a5b1bf;margin-top:3px'>TOP20 为实时榜单，分母为两市成交额，时点可能不同仅作参考</div></section><section class='card'><h4>数据源健康度</h4><div style='display:grid;grid-template-columns:1fr 1fr;column-gap:12px'><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>报告快照</span><span style='color:#8895a5'>成交额 / 广度</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#e05a4f;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>涨停池（东财）</span><span style='color:#8895a5'>0 家</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>主力买盘（东财）</span><span style='color:#8895a5'>-521 亿</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>外围指数</span><span style='color:#8895a5'>8 个</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>VIX</span><span style='color:#8895a5'>30.31</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>外围恐贪（CNN）</span><span style='color:#8895a5'>12/100</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>情绪轨迹（派生库）</span><span style='color:#8895a5'>2 日</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>期指基差</span><span style='color:#8895a5'>4 合约</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>成交额 TOP20</span><span style='color:#8895a5'>20 只</span></div><div style='display:flex;align-items:center;gap:6px;font-size:10.5px;line-height:1.8'><i style='width:7px;height:7px;border-radius:50%;background:#2e9e7b;flex:0 0 7px'></i><span style='flex:1 1 0;color:#33465c'>评分引擎</span><span style='color:#8895a5'>得分率 25.0%</span></div></div></section><section class='card'><h4>连板行业分布</h4><div style='display:flex;gap:6px;align-items:center'><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#e8f1ff;color:#25599b;font-size:10.5px;font-weight:600;white-space:nowrap'>原序合计 0 家</span><span style='font-size:10px;color:#8895a5'>行业数 0</span></div><div style='font-size:11px;color:#8895a5;margin-top:6px'>待补（涨停池未采集，需外网运行 fetch_zt_pool）</div></section><section class='card'><h4>涨停行业分布</h4><div style='display:flex;gap:6px;align-items:center'><span style='display:inline-block;padding:1px 7px;border-radius:999px;background:#e8f1ff;color:#25599b;font-size:10.5px;font-weight:600;white-space:nowrap'>原序合计 0 家</span><span style='font-size:10px;color:#8895a5'>行业数 0</span></div><div style='font-size:11px;color:#8895a5;margin-top:6px'>待补（涨停池未采集，需外网运行 fetch_zt_pool）</div></section><!--ovt-end--></div><!--viz-end-->
-<div class='srcdata' hidden><p><strong>今日要点（30 秒版）</strong></p>
-<p class='li'>1. <strong>广度</strong>：上涨 313 只 / 下跌 5,236 只（上涨占比 5%），涨停 30 / 跌停 68；全市场个股近20日中位数 -16.21%。</p>
-<p class='li'>2. <strong>量能</strong>：成交额 14222 亿（1万亿），较上日 +8.97%；价跌量增（抛压释放）。</p>
-<p class='li'>3. <strong>资金</strong>：124 行业口径净额 -509 亿，元件 领跑 +18 亿；期货 IF -2.16%、IH -2.31%、IC -1.73%、IM -1.82%。</p>
-<p class='li'>4. <strong>归因</strong>：事件驱动为主（半导体/存储/芯片，高 置信）；主题 AR 最强 —（—）。</p>
-<p class='li'>5. <strong>待复核</strong>：数据质量 97%（1 项需留意），通道 6 个，跨源一致性 9/9；为收盘终值口径。</p><blockquote><strong>一句话结论</strong>：短中期背离，需下一交易日量能与资金确认（自建画像 26/45，58%）；基准情景 二次探底风险偏高。</blockquote><h2 id='s1'>执行摘要</h2><div class='tw'><table><thead><tr><th>维度</th><th>今日读数</th><th>倾向</th></tr></thead><tbody>
-<tr><td>指数</td><td>上证 -1.23% / 科创50 -3.12%</td><td>普涨</td></tr>
-<tr><td>广度</td><td>上涨 5% / 涨停 30 / 跌停 68</td><td>普涨但追高赚钱效应弱</td></tr>
-<tr><td>成交额</td><td>14222 亿（1万亿，较上日 +8.97%）</td><td>价跌量增（抛压释放）</td></tr>
-<tr><td>板块资金</td><td>主力净额 -509 亿，净流入板块 14/124</td><td>结构性进攻</td></tr>
-<tr><td>杠杆 / 溢价</td><td>融资余额 <strong>未取到</strong>，1 只ETF溢价≥0.5%</td><td>溢价偏高；杠杆缺失，不作判断</td></tr>
-<tr><td>ETF全景</td><td>全市场 1745 只 / 样本覆盖 14% 规模</td><td>接口全量</td></tr>
-<tr><td>真实净申购(T-1)</td><td>样本 +212.5 亿 / 2026-11-19</td><td>一级净流入</td></tr>
-<tr><td>股债性价比</td><td>ERP +2.44pct</td><td>宏观接口</td></tr>
-<tr><td>股指期货基差</td><td>IF -2.16% / IH -2.31% / IC -1.73% / IM -1.82%</td><td>全线贴水，对冲需求偏高</td></tr>
-<tr><td>官方画像</td><td>调整分 2.47（13 维）</td><td>与自建画像互为印证</td></tr>
-<tr><td>回测校准</td><td>4 条规则 / 240 根日线（扣成本+样本外）</td><td>详见第九章</td></tr>
-<tr><td>数据质量</td><td>97%（29）</td><td>1 项需留意</td></tr>
-<tr><td>涨跌归因</td><td>事件驱动为主（半导体/存储/芯片，高 置信）</td><td>候选驱动 80 条 / 事后 394 条</td></tr>
-<tr><td>快讯多源互证</td><td>6 项关键事实</td><td>4 个独立信源族</td></tr>
-<tr><td>全市场涨跌排行</td><td>个股 5580 / ETF 1742 只全量</td><td>近20日仅 10% 个股为正，中期仍弱</td></tr>
-<tr><td>多方评论观点</td><td>151 条 / 7 类观点方</td><td>1 个主题现分歧/条件式，无单边共识</td></tr>
-</tbody></table></div><hr/></div><div class='extdata' hidden>外围指数:恒生指数:-1.89 恒生科技指数:-3.78 国企指数:-1.77 纳斯达克:-2.46 标普500:-1.30 道琼斯:+0.03 纳斯达克100:-2.77 富时100:-0.82 VIX:30.31 FG:12.08 FG1D:18.68 FG1W:37.37</div><div class='kdata' hidden>FF:-520.88 BASIS:IF:-2.16,IH:-2.31,IC:-1.73,IM:-1.82</div><div class='t20' hidden>T20:1636.31 中际旭创|149.41 新易盛|147.41 宁德时代|104.55 紫金矿业|101.88 贵州茅台|97.96 长鑫科技|97.17 寒武纪|94.72 中芯国际|88.28 东山精密|75.40 华虹宏力|67.50 中微公司|66.34 招商银行|65.83 沪电股份|64.84 中国平安|64.56 海光信息|62.44 长江电力|60.53 北方华创|58.81 兆易创新|57.78 药明康德|57.20 华胜天成|53.70</div>
-<div id='lightbox'><div class='lb-in' id='lightbox-in'></div></div>
-<script>
-(function(){
-var lb=document.getElementById('lightbox'),box=document.getElementById('lightbox-in');
-if(!lb||!box)return;
-[].slice.call(document.querySelectorAll('.dash .card')).forEach(function(el){
-  el.onclick=function(){var c=el.querySelector('.chart'),h=el.querySelector('h4');
-    if(!c)return;box.innerHTML='<h4>'+(h?h.textContent:'')+'</h4>'+c.innerHTML;
-    lb.classList.add('on');document.body.style.overflow='hidden';};});
-lb.onclick=function(){lb.classList.remove('on');document.body.style.overflow='';};
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){
-  lb.classList.remove('on');document.body.style.overflow='';}});
-})();
-</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="ETF三因子轮动看板 - 动量M+相对低位V+资金流F+大盘择时+信号天数+回测+操作建议 - 每日自动更新">
+<title>ETF三因子轮动看板 | 每日自动更新</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--bd:#30363d;--t:#c9d1d9;--td:#8b949e;--g:#3fb950;--r:#f85149;--y:#d29922;--b:#58a6ff;--tt:#e3b341;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);padding:20px;}
+.hd{text-align:center;margin-bottom:24px;}
+.hd h1{font-size:30px;color:var(--b);margin-bottom:8px;}
+.hd .sub{color:var(--td);font-size:14px;}
+.hd .dt{color:var(--g);font-size:16px;margin-top:4px;}
+.hd .auto{color:var(--y);font-size:12px;margin-top:4px;}
+.gridlink{display:inline-block;margin-top:10px;padding:8px 20px;background:rgba(88,166,255,.15);border:1px solid var(--b);border-radius:8px;color:var(--b);font-size:14px;font-weight:600;text-decoration:none;}
+.gridlink:hover{background:rgba(88,166,255,.32);}
+.lg{display:flex;gap:24px;justify-content:center;margin-bottom:16px;font-size:12px;color:var(--td);flex-wrap:wrap;}
+.pc{display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;justify-content:center;}
+.pcard{background:var(--card);border:2px solid var(--g);border-radius:12px;padding:16px 24px;min-width:380px;text-align:center;}
+.prank{color:var(--y);font-size:14px;font-weight:bold;margin-bottom:4px;}
+.pname{font-size:22px;font-weight:bold;margin-bottom:8px;}
+.pcode{font-size:14px;color:var(--td);}
+.pdetail{font-size:13px;color:var(--td);margin-bottom:8px;}
+.pw{color:var(--g);font-size:16px;font-weight:bold;margin-bottom:4px;}
+.pr{font-size:12px;color:var(--td);}
+.op{margin-top:8px;font-size:13px;padding:6px 10px;border-radius:8px;text-align:left;line-height:1.5;}
+.op.add{background:rgba(63,185,80,0.12);border:1px solid var(--g);color:var(--g);}
+.op.grid{background:rgba(88,166,255,0.12);border:1px solid var(--b);color:var(--b);}
+.op.hold{background:rgba(210,153,34,0.10);border:1px solid var(--y);color:var(--y);}
+.op.stop{background:rgba(248,81,73,0.12);border:1px solid var(--r);color:var(--r);}
+.opd{font-size:12px;color:var(--td);margin-top:4px;text-align:left;}
+.fc-m{color:var(--b);}.fc-v{color:var(--g);}.fc-f{color:var(--y);}.fc-t{color:var(--tt);}
+.empty{background:var(--card);border:2px solid var(--y);border-radius:12px;padding:20px 40px;font-size:18px;color:var(--y);}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;overflow:hidden;font-size:13px;margin-bottom:24px;}
+th{background:#21262d;color:var(--td);padding:10px 8px;text-align:center;font-weight:600;border-bottom:2px solid var(--bd);white-space:nowrap;}
+td{padding:8px;text-align:center;border-bottom:1px solid var(--bd);}
+tr.hl{background:rgba(63,185,80,0.1);}
+tr.hl td{border-color:rgba(63,185,80,0.3);}
+.code{color:var(--b);font-family:monospace;}.name{font-weight:600;}
+.pos{color:var(--g);}.neg{color:var(--r);}.total{color:var(--tt);font-weight:bold;font-size:15px;}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.pass{background:rgba(63,185,80,0.2);color:var(--g);}
+.fail{background:rgba(248,81,73,0.15);color:var(--r);}
+.warn{background:rgba(210,153,34,0.2);color:var(--y);}
+.act-add{color:var(--g);font-weight:600;}
+.act-grid{color:var(--b);font-weight:600;}
+.act-hold{color:var(--y);font-weight:600;}
+.act-stop{color:var(--r);font-weight:600;}
+.td2{font-size:10px;color:var(--td);}
+.mkt{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:center;margin:8px auto 22px;padding:12px 20px;border-radius:10px;font-size:14px;max-width:920px;line-height:1.6;}
+.mkt.bull{background:rgba(63,185,80,0.12);border:1px solid var(--g);color:var(--g);}
+.mkt.neutral{background:rgba(210,153,34,0.12);border:1px solid var(--y);color:var(--y);}
+.mkt.bear{background:rgba(248,81,73,0.12);border:1px solid var(--r);color:var(--r);}
+.mkt b{color:var(--t);}
+.ft{text-align:center;margin-top:24px;color:var(--td);font-size:12px;}
+.tip{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:13px;color:var(--td);line-height:1.8;}
+.tip b{color:var(--y);}
+.hist-title{color:var(--b);font-size:18px;font-weight:bold;margin:24px 0 12px 0;text-align:center;}
+.hist-table{font-size:12px;}
+@media(max-width:768px){table{font-size:10px;}th,td{padding:5px 3px;}.lg{gap:8px;}.mkt{font-size:12px;}}
+</style></head><body>
+<div class="hd"><h1>📊 ETF三因子轮动看板</h1>
+<div class="sub">动量M(40%) + 相对低位V(30%) + 资金流F(30%) + 大盘择时 | 150只主流ETF全覆盖</div>
+<div class="dt">📅 2026-11-26 11:05</div>
+<div class="auto">⚡ 每个交易日19:00自动更新 | 数据源: 新浪财经(实时)</div>
+<a class="gridlink" href="grid.html">🧮 打开网格交易看板 →</a></div>
+<div class="lg">
+<span>🟦 M=近10日×60%+近20日×40%</span>
+<span>🟩 V=60日价格分位(越低分越高)</span>
+<span>🟨 F=5日均量/20日均量×50</span>
+</div>
+<div class="mkt bear">📈 大盘趋势: <b>🔴 弱势·防御</b> | 上证综指 <b>3476.47</b> | 20日线 3613.37 | 60日线 3768.96 | 20日动量 <b>-5.57%</b> | 建议总仓位 <b>20%</b></div>
+<div class="pc"><div class="pcard">
+  <div class="prank">🏆 第140名</div>
+  <div class="pname">港股消费ETF银华 <span class="pcode">(sz159735)</span></div>
+  <div class="pdetail">
+    <span>现价: <b>0.663</b></span> |
+    <span class="fc-m">M: 3.05</span> |
+    <span class="fc-v">V: 29.8</span> |
+    <span class="fc-f">F: 39.9</span> |
+    <span>综合: <b class="fc-t">22.12</b></span>
+  </div>
+  <div class="pw">💰 建议仓位: 20%</div>
+  <div class="pr">✅ 三重风控通过 | 日涨跌: +0.91% | 📅 信号持续: 0天</div>
+  <div class="op act-hold">🎯 操作: <b>持有</b> — 趋势持有, 关注信号持续(0天)</div>
+  <div class="opd">🛡 止损参考: ¥0.661 (20日线)</div>
+  <div class="opd">🔲 网格区间: —</div>
+  <div class="opd">📊 历史最优持股 —(样本不足)</div>
+</div></div>
+<table><thead><tr>
+<th>#</th><th>代码</th><th>名称</th><th>现价</th><th>日涨幅</th><th>10日收益</th>
+<th>M得分</th><th>V分位</th><th>V得分</th><th>F比率</th><th>F得分</th><th>综合</th><th>风控</th>
+<th>信号天数</th><th>最优持股</th><th>操作</th>
+</tr></thead><tbody><tr>
+  <td>1</td><td class="code">sh512390</td><td class="name">低波ETF-平安</td>
+  <td>1.227</td><td class="pos">+0.00%</td>
+  <td class="neg">-0.57%</td><td>-0.70</td>
+  <td>22.6%</td><td>77.4</td>
+  <td>2.84</td><td>141.9</td>
+  <td class="total">65.50</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>5天<br><span class="td2">均+1.33%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>2</td><td class="code">sh510330</td><td class="name">沪深300ETF-华夏</td>
+  <td>4.136</td><td class="neg">-1.57%</td>
+  <td class="neg">-4.46%</td><td>-4.48</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>2.18</td><td>108.8</td>
+  <td class="total">60.85</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>3</td><td class="code">sz159919</td><td class="name">沪深300ETF-嘉实</td>
+  <td>4.142</td><td class="neg">-1.62%</td>
+  <td class="neg">-4.41%</td><td>-4.46</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>2.11</td><td>105.4</td>
+  <td class="total">59.84</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>4</td><td class="code">sh510050</td><td class="name">上证50ETF-华夏</td>
+  <td>2.857</td><td class="neg">-1.07%</td>
+  <td class="neg">-0.87%</td><td>-0.65</td>
+  <td>9.6%</td><td>90.4</td>
+  <td>1.96</td><td>97.9</td>
+  <td class="total">56.25</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>5</td><td class="code">sh510310</td><td class="name">沪深300ETF-易方达</td>
+  <td>3.858</td><td class="neg">-1.58%</td>
+  <td class="neg">-4.36%</td><td>-4.37</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.60</td><td>79.8</td>
+  <td class="total">52.20</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>6</td><td class="code">sh588080</td><td class="name">科创板50ETF-易方达</td>
+  <td>1.212</td><td class="neg">-5.02%</td>
+  <td class="neg">-9.21%</td><td>-8.61</td>
+  <td>6.1%</td><td>93.9</td>
+  <td>1.72</td><td>86.0</td>
+  <td class="total">50.52</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>7</td><td class="code">sz159936</td><td class="name">可选消费ETF-广发</td>
+  <td>1.757</td><td class="neg">-1.95%</td>
+  <td class="neg">-5.39%</td><td>-4.59</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.39</td><td>69.7</td>
+  <td class="total">49.08</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>8</td><td class="code">sz159627</td><td class="name">存储ETF-嘉实</td>
+  <td>1.091</td><td class="neg">-1.80%</td>
+  <td class="neg">-4.47%</td><td>-4.50</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.26</td><td>63.1</td>
+  <td class="total">47.12</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>9</td><td class="code">sh510500</td><td class="name">中证500ETF-南方</td>
+  <td>5.922</td><td class="neg">-3.33%</td>
+  <td class="neg">-12.24%</td><td>-11.84</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.44</td><td>71.9</td>
+  <td class="total">46.84</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>10</td><td class="code">sh513180</td><td class="name">恒生科技指数ETF-华夏</td>
+  <td>0.424</td><td class="neg">-1.85%</td>
+  <td class="neg">-16.04%</td><td>-14.29</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.50</td><td>75.1</td>
+  <td class="total">46.81</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>11</td><td class="code">sh510300</td><td class="name">沪深300ETF-华泰柏瑞</td>
+  <td>3.970</td><td class="neg">-1.56%</td>
+  <td class="neg">-4.34%</td><td>-4.36</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.17</td><td>58.5</td>
+  <td class="total">45.81</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>12</td><td class="code">sh513030</td><td class="name">德国DAXETF-华安</td>
+  <td>1.665</td><td class="neg">-1.19%</td>
+  <td class="neg">-9.76%</td><td>-7.77</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.25</td><td>62.5</td>
+  <td class="total">45.63</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均+0.84%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>13</td><td class="code">sz159611</td><td class="name">电力ETF-鹏华</td>
+  <td>1.018</td><td class="neg">-0.97%</td>
+  <td class="neg">-1.36%</td><td>-1.09</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.07</td><td>53.4</td>
+  <td class="total">45.58</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>5天<br><span class="td2">均-0.11%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>14</td><td class="code">sz159581</td><td class="name">红利ETF-万家中证</td>
+  <td>1.034</td><td class="neg">-0.48%</td>
+  <td class="neg">-2.18%</td><td>-1.92</td>
+  <td>4.8%</td><td>95.2</td>
+  <td>1.17</td><td>58.7</td>
+  <td class="total">45.41</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>15</td><td class="code">sz159937</td><td class="name">黄金ETF-博时</td>
+  <td>7.155</td><td class="neg">-3.00%</td>
+  <td class="neg">-13.47%</td><td>-13.22</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.37</td><td>68.6</td>
+  <td class="total">45.28</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>16</td><td class="code">sh515910</td><td class="name">质量ETF-中金</td>
+  <td>0.562</td><td class="neg">-0.88%</td>
+  <td class="neg">-4.91%</td><td>-5.35</td>
+  <td>0.8%</td><td>99.2</td>
+  <td>1.16</td><td>58.1</td>
+  <td class="total">45.05</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>17</td><td class="code">sz159201</td><td class="name">自由现金流ETF-国泰</td>
+  <td>1.112</td><td class="neg">-0.27%</td>
+  <td class="neg">-1.94%</td><td>-2.69</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.04</td><td>52.2</td>
+  <td class="total">44.58</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>18</td><td class="code">sz159643</td><td class="name">疫苗ETF国泰</td>
+  <td>0.486</td><td class="neg">-0.41%</td>
+  <td class="neg">-9.33%</td><td>-8.71</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.15</td><td>57.3</td>
+  <td class="total">43.71</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>19</td><td class="code">sz159625</td><td class="name">绿色电力ETF嘉实</td>
+  <td>1.172</td><td class="neg">-1.26%</td>
+  <td class="neg">-1.68%</td><td>-1.51</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.95</td><td>47.3</td>
+  <td class="total">43.59</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>20</td><td class="code">sz159870</td><td class="name">化工ETF-鹏华</td>
+  <td>0.617</td><td class="neg">-2.37%</td>
+  <td class="neg">-10.32%</td><td>-10.11</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.16</td><td>57.9</td>
+  <td class="total">43.33</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>21</td><td class="code">sh518880</td><td class="name">黄金ETF-华安</td>
+  <td>7.169</td><td class="neg">-3.00%</td>
+  <td class="neg">-13.51%</td><td>-13.25</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.24</td><td>62.0</td>
+  <td class="total">43.29</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>22</td><td class="code">sh510180</td><td class="name">上证180ETF-华安</td>
+  <td>3.577</td><td class="neg">-1.35%</td>
+  <td class="neg">-2.72%</td><td>-2.42</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.94</td><td>47.1</td>
+  <td class="total">43.16</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>23</td><td class="code">sh513050</td><td class="name">中概互联网ETF-易方达</td>
+  <td>0.846</td><td class="neg">-0.35%</td>
+  <td class="neg">-14.89%</td><td>-12.82</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.22</td><td>60.8</td>
+  <td class="total">43.12</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>24</td><td class="code">sh513820</td><td class="name">港股通高股息ETF-汇添富</td>
+  <td>1.144</td><td class="neg">-1.12%</td>
+  <td class="neg">-5.22%</td><td>-4.09</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.98</td><td>48.8</td>
+  <td class="total">43.00</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>25</td><td class="code">sh512100</td><td class="name">中证1000ETF-南方</td>
+  <td>2.254</td><td class="neg">-4.25%</td>
+  <td class="neg">-16.89%</td><td>-16.43</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.30</td><td>64.9</td>
+  <td class="total">42.89</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>26</td><td class="code">sh513100</td><td class="name">纳指ETF-国泰</td>
+  <td>2.049</td><td class="neg">-3.85%</td>
+  <td class="neg">-8.24%</td><td>-9.54</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.10</td><td>55.0</td>
+  <td class="total">42.68</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>27</td><td class="code">sz159920</td><td class="name">恒生ETF-华夏</td>
+  <td>1.286</td><td class="neg">-0.85%</td>
+  <td class="neg">-10.13%</td><td>-7.95</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.04</td><td>51.8</td>
+  <td class="total">42.37</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>28</td><td class="code">sh512880</td><td class="name">证券ETF-国泰</td>
+  <td>0.955</td><td class="neg">-1.44%</td>
+  <td class="neg">-4.21%</td><td>-4.02</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.93</td><td>46.6</td>
+  <td class="total">42.36</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>29</td><td class="code">sh563300</td><td class="name">中证A500ETF-摩根</td>
+  <td>1.077</td><td class="neg">-4.18%</td>
+  <td class="neg">-17.72%</td><td>-17.06</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.27</td><td>63.3</td>
+  <td class="total">42.17</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>30</td><td class="code">sz159731</td><td class="name">石化ETF华夏</td>
+  <td>0.792</td><td class="neg">-1.61%</td>
+  <td class="neg">-6.49%</td><td>-7.27</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.00</td><td>49.8</td>
+  <td class="total">42.03</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>31</td><td class="code">sz159587</td><td class="name">粮食ETF广发</td>
+  <td>0.986</td><td class="neg">-1.10%</td>
+  <td class="neg">-7.76%</td><td>-7.10</td>
+  <td>0.5%</td><td>99.5</td>
+  <td>1.00</td><td>50.1</td>
+  <td class="total">42.03</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>10天<br><span class="td2">均+2.83%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>32</td><td class="code">sz159563</td><td class="name">创业板综ETF-万家</td>
+  <td>1.228</td><td class="neg">-4.29%</td>
+  <td class="neg">-14.78%</td><td>-15.41</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.21</td><td>60.6</td>
+  <td class="total">42.02</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>33</td><td class="code">sz159828</td><td class="name">医疗保健ETF-国泰</td>
+  <td>0.399</td><td class="neg">-1.72%</td>
+  <td class="neg">-6.99%</td><td>-5.65</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.95</td><td>47.5</td>
+  <td class="total">41.98</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>34</td><td class="code">sz159901</td><td class="name">深证100ETF-易方达</td>
+  <td>2.644</td><td class="neg">-2.44%</td>
+  <td class="neg">-8.67%</td><td>-9.17</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.04</td><td>52.0</td>
+  <td class="total">41.93</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>35</td><td class="code">sz159531</td><td class="name">中证2000ETF-南方</td>
+  <td>1.105</td><td class="neg">-3.75%</td>
+  <td class="neg">-16.92%</td><td>-16.51</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.23</td><td>61.3</td>
+  <td class="total">41.80</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>36</td><td class="code">sz159985</td><td class="name">豆粕ETF-华夏</td>
+  <td>2.115</td><td class="neg">-2.08%</td>
+  <td class="neg">-3.20%</td><td>-3.03</td>
+  <td>7.4%</td><td>92.6</td>
+  <td>1.01</td><td>50.4</td>
+  <td class="total">41.68</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>37</td><td class="code">sz159916</td><td class="name">基本面ETF-建信</td>
+  <td>4.705</td><td class="neg">-0.51%</td>
+  <td class="neg">-1.71%</td><td>-1.33</td>
+  <td>5.5%</td><td>94.5</td>
+  <td>0.91</td><td>45.6</td>
+  <td class="total">41.50</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>38</td><td class="code">sh516750</td><td class="name">建材ETF-国泰</td>
+  <td>0.498</td><td class="neg">-1.39%</td>
+  <td class="neg">-10.59%</td><td>-10.07</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.03</td><td>51.6</td>
+  <td class="total">41.45</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均+0.01%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>39</td><td class="code">sz159792</td><td class="name">港股通互联网ETF-富国</td>
+  <td>0.442</td><td class="neg">-0.45%</td>
+  <td class="neg">-17.54%</td><td>-15.30</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.16</td><td>58.1</td>
+  <td class="total">41.30</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>40</td><td class="code">sh563000</td><td class="name">中证A50ETF-平安</td>
+  <td>0.931</td><td class="neg">-1.59%</td>
+  <td class="neg">-4.71%</td><td>-4.98</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.88</td><td>44.1</td>
+  <td class="total">41.24</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>41</td><td class="code">sh512170</td><td class="name">医疗ETF-华宝</td>
+  <td>0.321</td><td class="neg">-1.23%</td>
+  <td class="neg">-6.69%</td><td>-5.34</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.89</td><td>44.6</td>
+  <td class="total">41.23</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>42</td><td class="code">sh513130</td><td class="name">恒生科技ETF-华泰柏瑞</td>
+  <td>0.419</td><td class="neg">-1.41%</td>
+  <td class="neg">-15.69%</td><td>-13.98</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.12</td><td>55.8</td>
+  <td class="total">41.14</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>43</td><td class="code">sh515080</td><td class="name">中证红利ETF-招商</td>
+  <td>1.535</td><td class="neg">-0.39%</td>
+  <td class="neg">-1.79%</td><td>-1.56</td>
+  <td>11.2%</td><td>88.8</td>
+  <td>0.99</td><td>49.6</td>
+  <td class="total">40.88</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>44</td><td class="code">sz159707</td><td class="name">地产ETF-华宝</td>
+  <td>0.429</td><td class="neg">-0.46%</td>
+  <td class="neg">-9.87%</td><td>-11.12</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.02</td><td>51.0</td>
+  <td class="total">40.86</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>45</td><td class="code">sh516950</td><td class="name">基建ETF-国泰</td>
+  <td>0.913</td><td class="neg">-1.30%</td>
+  <td class="neg">-5.39%</td><td>-5.39</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.86</td><td>43.1</td>
+  <td class="total">40.77</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>46</td><td class="code">sh513520</td><td class="name">日经225ETF-华夏</td>
+  <td>1.927</td><td class="neg">-3.65%</td>
+  <td class="neg">-8.72%</td><td>-10.57</td>
+  <td>1.0%</td><td>99.0</td>
+  <td>1.01</td><td>50.5</td>
+  <td class="total">40.60</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>47</td><td class="code">sh588200</td><td class="name">科创芯片ETF-嘉实</td>
+  <td>0.784</td><td class="neg">-6.56%</td>
+  <td class="neg">-11.71%</td><td>-11.06</td>
+  <td>6.7%</td><td>93.3</td>
+  <td>1.12</td><td>56.2</td>
+  <td class="total">40.43</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>48</td><td class="code">sz159698</td><td class="name">粮食ETF-博时</td>
+  <td>0.765</td><td class="neg">-1.16%</td>
+  <td class="neg">-7.72%</td><td>-7.13</td>
+  <td>1.0%</td><td>99.0</td>
+  <td>0.90</td><td>45.2</td>
+  <td class="total">40.41</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>49</td><td class="code">sz159568</td><td class="name">港股创新药ETF-港股通</td>
+  <td>0.870</td><td class="neg">-0.46%</td>
+  <td class="neg">-17.54%</td><td>-15.23</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.10</td><td>54.9</td>
+  <td class="total">40.37</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>20天<br><span class="td2">均+4.73%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>50</td><td class="code">sh515700</td><td class="name">新能源车ETF-平安</td>
+  <td>1.561</td><td class="neg">-5.16%</td>
+  <td class="neg">-13.80%</td><td>-13.09</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.04</td><td>51.9</td>
+  <td class="total">40.34</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>51</td><td class="code">sz159892</td><td class="name">恒生医药ETF华夏</td>
+  <td>0.670</td><td class="neg">-0.45%</td>
+  <td class="neg">-12.42%</td><td>-10.43</td>
+  <td>3.3%</td><td>96.7</td>
+  <td>1.03</td><td>51.6</td>
+  <td class="total">40.32</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>52</td><td class="code">sh512720</td><td class="name">计算机ETF-国泰</td>
+  <td>0.884</td><td class="neg">-3.49%</td>
+  <td class="neg">-12.82%</td><td>-12.92</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.03</td><td>51.3</td>
+  <td class="total">40.22</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>53</td><td class="code">sz159645</td><td class="name">疫苗ETF富国</td>
+  <td>0.540</td><td class="neg">-0.55%</td>
+  <td class="neg">-9.09%</td><td>-8.53</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.91</td><td>45.4</td>
+  <td class="total">40.20</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均-1.14%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>54</td><td class="code">sh512200</td><td class="name">房地产ETF-南方</td>
+  <td>0.984</td><td class="neg">-2.19%</td>
+  <td class="neg">-14.06%</td><td>-14.45</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.06</td><td>52.9</td>
+  <td class="total">40.09</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>55</td><td class="code">sh513500</td><td class="name">标普500ETF-博时</td>
+  <td>2.476</td><td class="neg">-2.06%</td>
+  <td class="neg">-6.99%</td><td>-7.54</td>
+  <td>7.0%</td><td>93.0</td>
+  <td>1.01</td><td>50.5</td>
+  <td class="total">40.04</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>56</td><td class="code">sz159663</td><td class="name">机床ETF华夏</td>
+  <td>0.650</td><td class="neg">-4.97%</td>
+  <td class="neg">-18.75%</td><td>-18.63</td>
+  <td>0.3%</td><td>99.7</td>
+  <td>1.17</td><td>58.5</td>
+  <td class="total">40.01</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均-1.29%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>57</td><td class="code">sz159915</td><td class="name">创业板ETF-易方达</td>
+  <td>2.199</td><td class="neg">-4.06%</td>
+  <td class="neg">-15.10%</td><td>-15.85</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.08</td><td>54.0</td>
+  <td class="total">39.85</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>58</td><td class="code">sz159790</td><td class="name">碳中和ETF-华夏</td>
+  <td>0.565</td><td class="neg">-3.58%</td>
+  <td class="neg">-8.28%</td><td>-6.86</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.83</td><td>41.6</td>
+  <td class="total">39.74</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>59</td><td class="code">sh516020</td><td class="name">化工ETF-华宝</td>
+  <td>0.661</td><td class="neg">-2.51%</td>
+  <td class="neg">-10.07%</td><td>-9.92</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.91</td><td>45.5</td>
+  <td class="total">39.68</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>60</td><td class="code">sz159526</td><td class="name">机器人ETF-易方达</td>
+  <td>1.150</td><td class="neg">-5.19%</td>
+  <td class="neg">-14.63%</td><td>-14.03</td>
+  <td>4.5%</td><td>95.5</td>
+  <td>1.10</td><td>55.2</td>
+  <td class="total">39.60</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>61</td><td class="code">sh588900</td><td class="name">科创100ETF南方</td>
+  <td>1.184</td><td class="neg">-5.73%</td>
+  <td class="neg">-18.90%</td><td>-18.61</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.14</td><td>56.8</td>
+  <td class="total">39.59</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>62</td><td class="code">sz159636</td><td class="name">港股通科技ETF-景顺长城</td>
+  <td>0.395</td><td class="neg">-1.50%</td>
+  <td class="neg">-15.05%</td><td>-13.04</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.98</td><td>48.8</td>
+  <td class="total">39.43</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>63</td><td class="code">sh588700</td><td class="name">科创医药ETF嘉实</td>
+  <td>0.815</td><td class="neg">-2.04%</td>
+  <td class="neg">-12.27%</td><td>-10.90</td>
+  <td>0.9%</td><td>99.1</td>
+  <td>0.94</td><td>46.9</td>
+  <td class="total">39.42</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>64</td><td class="code">sz159326</td><td class="name">电网设备ETF-华夏</td>
+  <td>1.273</td><td class="neg">-4.07%</td>
+  <td class="neg">-11.17%</td><td>-10.87</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.91</td><td>45.3</td>
+  <td class="total">39.25</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>65</td><td class="code">sz159381</td><td class="name">创业板人工智能ETF-南方</td>
+  <td>0.710</td><td class="neg">-3.14%</td>
+  <td class="neg">-19.04%</td><td>-21.12</td>
+  <td>3.0%</td><td>97.0</td>
+  <td>1.23</td><td>61.6</td>
+  <td class="total">39.13</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>66</td><td class="code">sz159516</td><td class="name">半导体材料设备ETF-国泰</td>
+  <td>0.470</td><td class="neg">-8.74%</td>
+  <td class="neg">-11.32%</td><td>-9.12</td>
+  <td>10.8%</td><td>89.2</td>
+  <td>1.07</td><td>53.3</td>
+  <td class="total">39.10</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均-2.81%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>67</td><td class="code">sh515210</td><td class="name">钢铁ETF-国泰</td>
+  <td>0.976</td><td class="neg">-1.21%</td>
+  <td class="neg">-8.18%</td><td>-8.36</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.83</td><td>41.4</td>
+  <td class="total">39.09</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>68</td><td class="code">sh512290</td><td class="name">生物医药ETF-国泰</td>
+  <td>0.953</td><td class="neg">-0.52%</td>
+  <td class="neg">-5.27%</td><td>-4.26</td>
+  <td>0.9%</td><td>99.1</td>
+  <td>0.73</td><td>36.4</td>
+  <td class="total">38.95</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>69</td><td class="code">sh515220</td><td class="name">煤炭ETF-国泰</td>
+  <td>1.129</td><td class="neg">-0.35%</td>
+  <td class="neg">-4.97%</td><td>-5.63</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.75</td><td>37.3</td>
+  <td class="total">38.95</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>70</td><td class="code">sz159995</td><td class="name">芯片ETF-华夏</td>
+  <td>0.773</td><td class="neg">-6.08%</td>
+  <td class="neg">-11.25%</td><td>-11.13</td>
+  <td>3.1%</td><td>96.9</td>
+  <td>0.94</td><td>47.0</td>
+  <td class="total">38.73</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均+0.86%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>71</td><td class="code">sz159858</td><td class="name">创新药ETF建信</td>
+  <td>0.613</td><td class="neg">-0.97%</td>
+  <td class="neg">-8.23%</td><td>-6.75</td>
+  <td>5.0%</td><td>95.0</td>
+  <td>0.86</td><td>43.0</td>
+  <td class="total">38.69</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>72</td><td class="code">sh588130</td><td class="name">科创医药ETF华夏</td>
+  <td>0.831</td><td class="neg">-1.89%</td>
+  <td class="neg">-12.06%</td><td>-10.79</td>
+  <td>0.9%</td><td>99.1</td>
+  <td>0.87</td><td>43.7</td>
+  <td class="total">38.53</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>73</td><td class="code">sh560710</td><td class="name">船舶ETF富国</td>
+  <td>0.798</td><td class="neg">-1.85%</td>
+  <td class="neg">-9.22%</td><td>-9.58</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.82</td><td>41.1</td>
+  <td class="total">38.51</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>74</td><td class="code">sz159997</td><td class="name">电子ETF-天弘</td>
+  <td>1.412</td><td class="neg">-5.61%</td>
+  <td class="neg">-13.00%</td><td>-13.40</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.92</td><td>46.2</td>
+  <td class="total">38.49</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>75</td><td class="code">sz159309</td><td class="name">油气资源ETF-汇添富</td>
+  <td>1.212</td><td class="neg">-1.06%</td>
+  <td class="neg">-6.70%</td><td>-8.81</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.80</td><td>39.8</td>
+  <td class="total">38.41</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>20天<br><span class="td2">均+7.03%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>76</td><td class="code">sz159930</td><td class="name">能源ETF-汇添富</td>
+  <td>1.650</td><td class="pos">+0.00%</td>
+  <td class="neg">-0.96%</td><td>-2.93</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.64</td><td>31.9</td>
+  <td class="total">38.41</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>77</td><td class="code">sh512480</td><td class="name">半导体ETF-国联安</td>
+  <td>0.708</td><td class="neg">-6.72%</td>
+  <td class="neg">-12.48%</td><td>-11.96</td>
+  <td>1.7%</td><td>98.3</td>
+  <td>0.91</td><td>45.5</td>
+  <td class="total">38.36</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>78</td><td class="code">sz516510</td><td class="name">云计算ETF-易方达</td>
+  <td>1.222</td><td class="neg">-3.32%</td>
+  <td class="neg">-15.43%</td><td>-15.71</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.97</td><td>48.5</td>
+  <td class="total">38.28</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>79</td><td class="code">sh515060</td><td class="name">房地产ETF华夏</td>
+  <td>0.476</td><td class="neg">-1.86%</td>
+  <td class="neg">-13.77%</td><td>-14.14</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.92</td><td>46.1</td>
+  <td class="total">38.18</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>80</td><td class="code">sz159949</td><td class="name">创业板50ETF-华安</td>
+  <td>0.978</td><td class="neg">-3.93%</td>
+  <td class="neg">-15.98%</td><td>-17.15</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.99</td><td>49.7</td>
+  <td class="total">38.06</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>81</td><td class="code">sh512670</td><td class="name">国防ETF-鹏华</td>
+  <td>0.611</td><td class="neg">-3.48%</td>
+  <td class="neg">-15.14%</td><td>-14.71</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.93</td><td>46.4</td>
+  <td class="total">38.03</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>82</td><td class="code">sz159983</td><td class="name">生物科技ETF-天弘</td>
+  <td>0.942</td><td class="pos">+0.32%</td>
+  <td class="neg">-2.48%</td><td>-3.89</td>
+  <td>2.6%</td><td>97.4</td>
+  <td>0.68</td><td>34.2</td>
+  <td class="total">37.94</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>83</td><td class="code">sz159566</td><td class="name">储能电池ETF易方达</td>
+  <td>1.254</td><td class="neg">-5.57%</td>
+  <td class="neg">-17.17%</td><td>-15.54</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.94</td><td>47.0</td>
+  <td class="total">37.89</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>84</td><td class="code">sz159837</td><td class="name">生物科技ETF易方达</td>
+  <td>0.452</td><td class="neg">-0.66%</td>
+  <td class="neg">-7.19%</td><td>-6.09</td>
+  <td>3.0%</td><td>97.0</td>
+  <td>0.75</td><td>37.4</td>
+  <td class="total">37.88</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>85</td><td class="code">sh561980</td><td class="name">中证半导体产业ETF-华安</td>
+  <td>0.478</td><td class="neg">-7.54%</td>
+  <td class="neg">-8.95%</td><td>-7.13</td>
+  <td>15.3%</td><td>84.7</td>
+  <td>1.02</td><td>51.0</td>
+  <td class="total">37.86</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>86</td><td class="code">sz159865</td><td class="name">养殖ETF-国泰</td>
+  <td>0.527</td><td class="neg">-2.04%</td>
+  <td class="neg">-1.68%</td><td>-0.08</td>
+  <td>27.7%</td><td>72.3</td>
+  <td>1.08</td><td>53.9</td>
+  <td class="total">37.82</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>87</td><td class="code">sh516110</td><td class="name">汽车ETF-国泰</td>
+  <td>0.997</td><td class="neg">-3.11%</td>
+  <td class="neg">-8.53%</td><td>-7.71</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.73</td><td>36.3</td>
+  <td class="total">37.81</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>88</td><td class="code">sh588000</td><td class="name">科创50ETF-华夏</td>
+  <td>1.254</td><td class="neg">-4.93%</td>
+  <td class="neg">-8.80%</td><td>-8.23</td>
+  <td>6.8%</td><td>93.2</td>
+  <td>0.88</td><td>43.8</td>
+  <td class="total">37.80</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>89</td><td class="code">sz159825</td><td class="name">农业ETF-富国</td>
+  <td>0.701</td><td class="neg">-1.96%</td>
+  <td class="neg">-2.77%</td><td>-1.26</td>
+  <td>12.1%</td><td>87.9</td>
+  <td>0.79</td><td>39.6</td>
+  <td class="total">37.74</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>90</td><td class="code">sh512400</td><td class="name">有色金属ETF-南方</td>
+  <td>1.213</td><td class="neg">-2.65%</td>
+  <td class="neg">-16.63%</td><td>-16.63</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.95</td><td>47.3</td>
+  <td class="total">37.54</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>91</td><td class="code">sh516080</td><td class="name">创新药ETF国泰</td>
+  <td>0.606</td><td class="neg">-0.66%</td>
+  <td class="neg">-8.04%</td><td>-6.59</td>
+  <td>6.0%</td><td>94.0</td>
+  <td>0.80</td><td>39.8</td>
+  <td class="total">37.50</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>92</td><td class="code">sz159755</td><td class="name">电池ETF-广发</td>
+  <td>0.660</td><td class="neg">-5.44%</td>
+  <td class="neg">-14.29%</td><td>-13.37</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.86</td><td>42.8</td>
+  <td class="total">37.50</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>93</td><td class="code">sz159770</td><td class="name">机器人ETF-天弘</td>
+  <td>0.803</td><td class="neg">-5.19%</td>
+  <td class="neg">-14.39%</td><td>-13.87</td>
+  <td>4.2%</td><td>95.8</td>
+  <td>0.95</td><td>47.6</td>
+  <td class="total">37.49</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>94</td><td class="code">sz159992</td><td class="name">创新药ETF-银华</td>
+  <td>0.759</td><td class="neg">-0.65%</td>
+  <td class="neg">-7.78%</td><td>-6.24</td>
+  <td>7.2%</td><td>92.8</td>
+  <td>0.80</td><td>40.1</td>
+  <td class="total">37.37</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>95</td><td class="code">sh513360</td><td class="name">教育ETF博时</td>
+  <td>0.379</td><td class="neg">-1.30%</td>
+  <td class="neg">-11.45%</td><td>-11.20</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.79</td><td>39.4</td>
+  <td class="total">37.33</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>96</td><td class="code">sz159537</td><td class="name">北证50ETF-易方达</td>
+  <td>0.607</td><td class="neg">-5.16%</td>
+  <td class="neg">-14.14%</td><td>-14.48</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.87</td><td>43.7</td>
+  <td class="total">37.32</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>97</td><td class="code">sz159267</td><td class="name">航天ETF华安</td>
+  <td>0.671</td><td class="neg">-3.73%</td>
+  <td class="neg">-17.47%</td><td>-17.10</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.94</td><td>47.0</td>
+  <td class="total">37.28</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>98</td><td class="code">sh561360</td><td class="name">石油ETF-国泰</td>
+  <td>1.257</td><td class="neg">-1.18%</td>
+  <td class="neg">-6.40%</td><td>-8.33</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.71</td><td>35.3</td>
+  <td class="total">37.26</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>99</td><td class="code">sz159819</td><td class="name">人工智能ETF-易方达</td>
+  <td>1.229</td><td class="neg">-4.13%</td>
+  <td class="neg">-14.77%</td><td>-15.49</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.90</td><td>44.8</td>
+  <td class="total">37.25</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>100</td><td class="code">sh515230</td><td class="name">软件ETF-国泰</td>
+  <td>0.563</td><td class="neg">-2.93%</td>
+  <td class="neg">-12.85%</td><td>-13.22</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.84</td><td>41.8</td>
+  <td class="total">37.24</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>101</td><td class="code">sz159996</td><td class="name">家电ETF-国泰</td>
+  <td>1.350</td><td class="neg">-1.89%</td>
+  <td class="neg">-2.03%</td><td>-0.83</td>
+  <td>27.0%</td><td>73.0</td>
+  <td>1.04</td><td>52.2</td>
+  <td class="total">37.22</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>102</td><td class="code">sz159922</td><td class="name">中证500ETF-嘉实</td>
+  <td>2.403</td><td class="neg">-3.46%</td>
+  <td class="neg">-12.17%</td><td>-11.78</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.77</td><td>38.5</td>
+  <td class="total">36.85</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>103</td><td class="code">sh515000</td><td class="name">科技ETF-华宝</td>
+  <td>0.844</td><td class="neg">-4.09%</td>
+  <td class="neg">-13.17%</td><td>-14.67</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.84</td><td>42.2</td>
+  <td class="total">36.78</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>104</td><td class="code">sh588030</td><td class="name">科创100ETF-博时</td>
+  <td>1.143</td><td class="neg">-6.00%</td>
+  <td class="neg">-19.39%</td><td>-19.00</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.96</td><td>47.9</td>
+  <td class="total">36.77</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>105</td><td class="code">sz159938</td><td class="name">医药ETF广发</td>
+  <td>0.607</td><td class="neg">-0.65%</td>
+  <td class="neg">-5.45%</td><td>-4.17</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.56</td><td>27.8</td>
+  <td class="total">36.68</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>106</td><td class="code">sh512070</td><td class="name">证券保险ETF-易方达</td>
+  <td>0.743</td><td class="neg">-1.07%</td>
+  <td class="neg">-1.20%</td><td>-0.50</td>
+  <td>13.0%</td><td>87.0</td>
+  <td>0.72</td><td>36.0</td>
+  <td class="total">36.68</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>107</td><td class="code">sz562500</td><td class="name">机器人ETF-华夏</td>
+  <td>0.776</td><td class="neg">-4.90%</td>
+  <td class="neg">-14.35%</td><td>-13.73</td>
+  <td>5.7%</td><td>94.3</td>
+  <td>0.92</td><td>46.1</td>
+  <td class="total">36.63</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>108</td><td class="code">sz159227</td><td class="name">航空航天ETF-国泰</td>
+  <td>0.790</td><td class="neg">-3.54%</td>
+  <td class="neg">-17.54%</td><td>-17.19</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.90</td><td>45.0</td>
+  <td class="total">36.61</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>109</td><td class="code">sh589220</td><td class="name">科创200ETF国泰</td>
+  <td>0.678</td><td class="neg">-6.87%</td>
+  <td class="neg">-21.89%</td><td>-21.11</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>1.00</td><td>49.8</td>
+  <td class="total">36.49</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>110</td><td class="code">sh515400</td><td class="name">大数据ETF-富国</td>
+  <td>0.643</td><td class="neg">-3.89%</td>
+  <td class="neg">-16.06%</td><td>-16.01</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.85</td><td>42.6</td>
+  <td class="total">36.38</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>20天<br><span class="td2">均-1.75%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>111</td><td class="code">sz159732</td><td class="name">消费电子ETF-华夏</td>
+  <td>0.912</td><td class="neg">-4.30%</td>
+  <td class="neg">-14.77%</td><td>-15.45</td>
+  <td>1.0%</td><td>99.0</td>
+  <td>0.85</td><td>42.7</td>
+  <td class="total">36.31</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>112</td><td class="code">sh512660</td><td class="name">军工ETF-国泰</td>
+  <td>0.890</td><td class="neg">-3.47%</td>
+  <td class="neg">-13.51%</td><td>-13.24</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.77</td><td>38.4</td>
+  <td class="total">36.23</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>113</td><td class="code">sz159766</td><td class="name">旅游ETF-富国</td>
+  <td>0.521</td><td class="neg">-0.19%</td>
+  <td class="neg">-5.10%</td><td>-2.75</td>
+  <td>11.4%</td><td>88.6</td>
+  <td>0.71</td><td>35.7</td>
+  <td class="total">36.19</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>114</td><td class="code">sh512710</td><td class="name">军工龙头ETF-富国</td>
+  <td>0.526</td><td class="neg">-3.13%</td>
+  <td class="neg">-13.91%</td><td>-13.34</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.75</td><td>37.5</td>
+  <td class="total">35.93</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>115</td><td class="code">sz159697</td><td class="name">石油ETF-鹏华</td>
+  <td>1.170</td><td class="neg">-0.76%</td>
+  <td class="neg">-4.88%</td><td>-7.15</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.58</td><td>28.9</td>
+  <td class="total">35.80</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>20天<br><span class="td2">均+5.01%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>116</td><td class="code">sh513280</td><td class="name">恒生生物科技ETF汇添富</td>
+  <td>0.947</td><td class="neg">-0.53%</td>
+  <td class="neg">-12.23%</td><td>-10.35</td>
+  <td>4.2%</td><td>95.8</td>
+  <td>0.74</td><td>37.2</td>
+  <td class="total">35.76</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>117</td><td class="code">sh516780</td><td class="name">稀土ETF-华泰柏瑞</td>
+  <td>0.606</td><td class="neg">-3.50%</td>
+  <td class="neg">-16.87%</td><td>-16.27</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.81</td><td>40.3</td>
+  <td class="total">35.59</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>3天<br><span class="td2">均+0.43%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>118</td><td class="code">sh512580</td><td class="name">环保ETF-广发</td>
+  <td>0.930</td><td class="neg">-3.23%</td>
+  <td class="neg">-10.14%</td><td>-8.89</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.60</td><td>29.8</td>
+  <td class="total">35.39</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>119</td><td class="code">sh515050</td><td class="name">5G通信ETF-华夏</td>
+  <td>0.587</td><td class="neg">-3.61%</td>
+  <td class="neg">-17.79%</td><td>-20.57</td>
+  <td>2.2%</td><td>97.8</td>
+  <td>0.95</td><td>47.3</td>
+  <td class="total">35.32</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>120</td><td class="code">sz159869</td><td class="name">游戏ETF-华夏</td>
+  <td>0.878</td><td class="neg">-2.77%</td>
+  <td class="neg">-19.38%</td><td>-17.02</td>
+  <td>1.1%</td><td>98.9</td>
+  <td>0.83</td><td>41.3</td>
+  <td class="total">35.27</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>121</td><td class="code">sz516160</td><td class="name">新能源ETF-南方</td>
+  <td>1.772</td><td class="neg">-4.22%</td>
+  <td class="neg">-13.52%</td><td>-12.17</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.67</td><td>33.5</td>
+  <td class="total">35.18</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>122</td><td class="code">sh588270</td><td class="name">科创200ETF易方达</td>
+  <td>1.126</td><td class="neg">-7.10%</td>
+  <td class="neg">-22.45%</td><td>-21.66</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.92</td><td>45.9</td>
+  <td class="total">35.12</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>123</td><td class="code">sz159259</td><td class="name">成长ETF-易方达</td>
+  <td>0.769</td><td class="neg">-4.94%</td>
+  <td class="neg">-20.15%</td><td>-21.27</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.91</td><td>45.3</td>
+  <td class="total">35.07</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>124</td><td class="code">sz159502</td><td class="name">标普生物科技ETF嘉实</td>
+  <td>1.539</td><td class="pos">+4.06%</td>
+  <td class="neg">-4.71%</td><td>-4.01</td>
+  <td>36.2%</td><td>63.8</td>
+  <td>1.16</td><td>58.0</td>
+  <td class="total">34.94</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>125</td><td class="code">sh515880</td><td class="name">通信ETF-国泰</td>
+  <td>0.373</td><td class="neg">-2.86%</td>
+  <td class="neg">-18.74%</td><td>-21.58</td>
+  <td>3.1%</td><td>96.9</td>
+  <td>0.95</td><td>47.4</td>
+  <td class="total">34.64</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>3天<br><span class="td2">均+3.06%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>126</td><td class="code">sz159845</td><td class="name">中证1000ETF-华夏</td>
+  <td>2.311</td><td class="neg">-4.31%</td>
+  <td class="neg">-16.96%</td><td>-16.51</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.75</td><td>37.3</td>
+  <td class="total">34.57</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>127</td><td class="code">sh588230</td><td class="name">科创200ETF-华泰柏瑞</td>
+  <td>1.205</td><td class="neg">-6.59%</td>
+  <td class="neg">-21.91%</td><td>-21.03</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.85</td><td>42.3</td>
+  <td class="total">34.28</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>128</td><td class="code">sh588400</td><td class="name">双创50ETF-嘉实</td>
+  <td>0.696</td><td class="neg">-4.26%</td>
+  <td class="neg">-12.01%</td><td>-13.13</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.63</td><td>31.7</td>
+  <td class="total">34.25</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均-0.82%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>129</td><td class="code">sh513630</td><td class="name">港股红利ETF-摩根</td>
+  <td>1.541</td><td class="neg">-0.45%</td>
+  <td class="neg">-4.46%</td><td>-2.21</td>
+  <td>24.8%</td><td>75.2</td>
+  <td>0.83</td><td>41.7</td>
+  <td class="total">34.20</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>130</td><td class="code">sh512980</td><td class="name">传媒ETF-广发</td>
+  <td>0.711</td><td class="neg">-3.40%</td>
+  <td class="neg">-16.84%</td><td>-14.29</td>
+  <td>1.3%</td><td>98.7</td>
+  <td>0.68</td><td>33.9</td>
+  <td class="total">34.07</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>3天<br><span class="td2">均-0.38%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>131</td><td class="code">sh515790</td><td class="name">光伏ETF-华泰柏瑞</td>
+  <td>0.624</td><td class="neg">-2.95%</td>
+  <td class="neg">-14.52%</td><td>-13.21</td>
+  <td>0.0%</td><td>100.0</td>
+  <td>0.59</td><td>29.3</td>
+  <td class="total">33.50</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>132</td><td class="code">sh512010</td><td class="name">医药ETF-易方达</td>
+  <td>0.375</td><td class="pos">+0.27%</td>
+  <td class="neg">-2.34%</td><td>-1.30</td>
+  <td>30.3%</td><td>69.7</td>
+  <td>0.86</td><td>43.1</td>
+  <td class="total">33.33</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>133</td><td class="code">sh510880</td><td class="name">红利ETF-华泰柏瑞</td>
+  <td>3.367</td><td class="neg">-0.38%</td>
+  <td class="neg">-0.18%</td><td>-0.30</td>
+  <td>30.2%</td><td>69.8</td>
+  <td>0.73</td><td>36.5</td>
+  <td class="total">31.80</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>134</td><td class="code">sz159666</td><td class="name">交通运输ETF华夏</td>
+  <td>0.969</td><td class="neg">-0.92%</td>
+  <td class="neg">-1.12%</td><td>-0.55</td>
+  <td>38.6%</td><td>61.4</td>
+  <td>0.83</td><td>41.3</td>
+  <td class="total">30.58</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>135</td><td class="code">sz560080</td><td class="name">中药ETF-鹏华</td>
+  <td>0.944</td><td class="pos">+0.85%</td>
+  <td class="neg">-1.87%</td><td>-1.16</td>
+  <td>36.2%</td><td>63.8</td>
+  <td>0.75</td><td>37.7</td>
+  <td class="total">29.99</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>136</td><td class="code">sh561580</td><td class="name">央企红利ETF-国泰</td>
+  <td>1.280</td><td class="neg">-0.85%</td>
+  <td class="pos">+0.47%</td><td>0.69</td>
+  <td>59.0%</td><td>41.0</td>
+  <td>0.95</td><td>47.7</td>
+  <td class="total">26.87</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>137</td><td class="code">sh513290</td><td class="name">纳指生物科技ETF汇添富</td>
+  <td>1.851</td><td class="pos">+1.59%</td>
+  <td class="neg">-4.04%</td><td>-1.77</td>
+  <td>54.9%</td><td>45.1</td>
+  <td>0.92</td><td>46.0</td>
+  <td class="total">26.65</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>1天<br><span class="td2">均+1.26%</span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>138</td><td class="code">sz159981</td><td class="name">能源化工ETF建信</td>
+  <td>1.727</td><td class="pos">+0.82%</td>
+  <td class="neg">-1.99%</td><td>-5.44</td>
+  <td>50.6%</td><td>49.4</td>
+  <td>0.68</td><td>34.2</td>
+  <td class="total">22.92</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr>
+  <td>139</td><td class="code">sh512690</td><td class="name">酒ETF-鹏华</td>
+  <td>0.435</td><td class="pos">+0.93%</td>
+  <td class="pos">+0.46%</td><td>3.03</td>
+  <td>62.0%</td><td>38.0</td>
+  <td>0.64</td><td>32.1</td>
+  <td class="total">22.25</td><td><span class="badge fail">❌未通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">观望</td>
+</tr>
+<tr class="hl">
+  <td>140</td><td class="code">sz159735</td><td class="name">港股消费ETF银华</td>
+  <td>0.663</td><td class="pos">+0.91%</td>
+  <td class="neg">-1.19%</td><td>3.05</td>
+  <td>70.2%</td><td>29.8</td>
+  <td>0.80</td><td>39.9</td>
+  <td class="total">22.12</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">持有</td>
+</tr>
+<tr class="hl">
+  <td>141</td><td class="code">sz159547</td><td class="name">黄金股ETF-华夏</td>
+  <td>1.264</td><td class="neg">-0.16%</td>
+  <td class="pos">+1.53%</td><td>1.92</td>
+  <td>78.0%</td><td>22.0</td>
+  <td>0.91</td><td>45.5</td>
+  <td class="total">21.00</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-grid">网格</td>
+</tr>
+<tr class="hl">
+  <td>142</td><td class="code">sh510630</td><td class="name">消费ETF-华夏</td>
+  <td>0.848</td><td class="pos">+0.83%</td>
+  <td class="pos">+2.54%</td><td>4.41</td>
+  <td>85.9%</td><td>14.1</td>
+  <td>0.93</td><td>46.5</td>
+  <td class="total">19.96</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-grid">网格</td>
+</tr>
+<tr class="hl">
+  <td>143</td><td class="code">sh515450</td><td class="name">红利低波50ETF-南方</td>
+  <td>1.511</td><td class="pos">+0.40%</td>
+  <td class="pos">+4.79%</td><td>4.58</td>
+  <td>96.9%</td><td>3.1</td>
+  <td>1.07</td><td>53.5</td>
+  <td class="total">18.82</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">持有</td>
+</tr>
+<tr class="hl">
+  <td>144</td><td class="code">sh510230</td><td class="name">金融ETF-国泰</td>
+  <td>1.393</td><td class="neg">-0.43%</td>
+  <td class="pos">+2.88%</td><td>3.40</td>
+  <td>88.0%</td><td>12.0</td>
+  <td>0.92</td><td>45.8</td>
+  <td class="total">18.69</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">持有</td>
+</tr>
+<tr class="hl">
+  <td>145</td><td class="code">sh512700</td><td class="name">银行ETF-南方</td>
+  <td>1.653</td><td class="neg">-0.06%</td>
+  <td class="pos">+4.55%</td><td>5.06</td>
+  <td>98.8%</td><td>1.2</td>
+  <td>1.08</td><td>54.0</td>
+  <td class="total">18.58</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">持有</td>
+</tr>
+<tr class="hl">
+  <td>146</td><td class="code">sz515170</td><td class="name">食品饮料ETF-华夏</td>
+  <td>0.484</td><td class="pos">+0.62%</td>
+  <td class="pos">+1.89%</td><td>3.69</td>
+  <td>79.1%</td><td>20.9</td>
+  <td>0.71</td><td>35.4</td>
+  <td class="total">18.37</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-grid">网格</td>
+</tr>
+<tr class="hl">
+  <td>147</td><td class="code">sh512890</td><td class="name">红利低波ETF-华泰柏瑞</td>
+  <td>1.255</td><td class="pos">+0.00%</td>
+  <td class="pos">+2.03%</td><td>2.37</td>
+  <td>82.4%</td><td>17.6</td>
+  <td>0.77</td><td>38.5</td>
+  <td class="total">17.78</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-grid">网格</td>
+</tr>
+<tr class="hl">
+  <td>148</td><td class="code">sh512800</td><td class="name">银行ETF-华宝</td>
+  <td>0.921</td><td class="neg">-0.22%</td>
+  <td class="pos">+4.42%</td><td>4.90</td>
+  <td>95.4%</td><td>4.6</td>
+  <td>0.85</td><td>42.4</td>
+  <td class="total">16.06</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">持有</td>
+</tr>
+<tr class="hl">
+  <td>149</td><td class="code">sz159928</td><td class="name">消费ETF-汇添富</td>
+  <td>0.703</td><td class="pos">+0.00%</td>
+  <td class="pos">+2.48%</td><td>4.48</td>
+  <td>89.2%</td><td>10.8</td>
+  <td>0.61</td><td>30.6</td>
+  <td class="total">14.21</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-grid">网格</td>
+</tr>
+<tr class="hl">
+  <td>150</td><td class="code">sh511360</td><td class="name">短融ETF-海富通</td>
+  <td>114.199</td><td class="pos">+0.00%</td>
+  <td class="pos">+0.04%</td><td>0.06</td>
+  <td>100.0%</td><td>0.0</td>
+  <td>0.84</td><td>41.8</td>
+  <td class="total">12.58</td><td><span class="badge pass">✅通过</span></td>
+  <td>—</td><td>—<br><span class="td2"></span></td><td class="act-hold">持有</td>
+</tr>
+</tbody></table>
+
+<div class="hist-title">📋 历史推荐记录</div>
+<table class="hist-table"><thead><tr>
+<th>更新时间</th><th>推荐持仓</th><th>ETF总数</th><th>风控通过数</th><th>大盘/总仓</th>
+</tr></thead><tbody><tr>
+  <td>2026-11-26 11:05</td><td>港股消费ETF银华(22.1)</td><td>150</td><td>11</td><td>弱势/20%</td>
+</tr>
+<tr>
+  <td>2026-09-29 16:03</td><td>生物科技ETF易方达(33.2) | 医药ETF-易方达(31.5)</td><td>150</td><td>14</td><td>中性/50%</td>
+</tr>
+<tr>
+  <td>2026-09-23 16:17</td><td>半导体材料设备ETF-国泰(45.6) | 芯片ETF-华夏(45.5) | 科创芯片ETF-嘉实(45.1)</td><td>146</td><td>49</td><td>强势/100%</td>
+</tr>
+<tr>
+  <td>2026-09-23 13:00</td><td>双创50ETF-嘉实(49.2) | 芯片ETF-华夏(47.6) | 半导体材料设备ETF-国泰(47.4)</td><td>141</td><td>68</td><td>强势/100%</td>
+</tr>
+<tr>
+  <td>2026-09-23 11:44</td><td>双创50ETF-嘉实(49.2) | 芯片ETF-华夏(47.6) | 半导体材料设备ETF-国泰(47.4)</td><td>122</td><td>54</td><td>强势/100%</td>
+</tr>
+<tr>
+  <td>2026-09-23 11:22</td><td>双创50ETF-嘉实(49.2) | 芯片ETF-华夏(47.6) | 半导体材料设备ETF-国泰(47.4)</td><td>121</td><td>53</td><td>强势/100%</td>
+</tr>
+<tr>
+  <td>2026-09-21 15:49</td><td>芯片ETF-华夏(46.6) | 科创芯片ETF-嘉实(46.5) | 半导体材料设备ETF-国泰(46.5)</td><td>121</td><td>45</td><td>强势/100%</td>
+</tr>
+<tr>
+  <td>2026-09-18 16:06</td><td>科创芯片ETF-嘉实(45.6) | 通信ETF-国泰(45.4)</td><td>114</td><td>21</td><td>中性/50%</td>
+</tr>
+<tr>
+  <td>2026-09-18 12:11</td><td>通信ETF-国泰(44.8)</td><td>113</td><td>12</td><td>弱势/20%</td>
+</tr>
+<tr>
+  <td>2026-09-18 11:46</td><td>通信ETF-国泰(44.8) | 5G通信ETF-华夏(38.0) | 成长ETF-易方达(36.2)</td><td>113</td><td>12</td><td>强势/100%</td>
+</tr></tbody></table>
+
+<div class="tip">
+📌 <b>使用说明：</b>每天19:00后查看 → 先看顶部「大盘趋势」定总仓位 → 选综合前N名(仓位随大盘缩放) → 看「信号天数」判断是否已持仓/刚触发 → 看「最优持股」定持有周期 → 按「操作」标签执行(加仓/网格/持有/止损)<br>
+📌 <b>信号天数：</b>综合进入前N(中性前2)且三重风控连续通过的天数。天数越长=趋势越稳；刚触发(1~2天)=新信号，可建仓观察。<br>
+📌 <b>历史最优持股：</b>回测"信号触发后持有1/3/5/10/20天"的平均收益，取最高者为最优持股天数（样本不足时显示—）。<br>
+📌 <b>操作标签：</b>🟢加仓=相对低位+资金流入，左侧分批；🔵网格=震荡区间分3档高抛低吸；🟡持有=趋势跟随；🔴止损=破均线或短期超跌，参考止损价离场。<br>
+📌 <b>大盘择时：</b>强势🟢满仓(100%,3只) / 中性🟡半仓(50%,2只) / 弱势🔴防御(20%,1只)。<br>
+📌 <b>三重风控：</b>①价格站上20日均线 ②均线向上 ③3日跌幅≤5%。止损参考=20日线(或-5%硬止损)。
+</div>
+<div class="ft">
+<p>⚡ 每个交易日19:00自动更新 | 数据源: 新浪财经(免费公开) | ⚠️ 仅供参考，投资有风险</p>
+<p>策略: 综合前N + 大盘择时 | 信号天数 + 历史回测最优持股 + 加仓/网格/止损建议</p>
+</div>
 </body></html>
